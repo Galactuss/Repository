@@ -17,60 +17,22 @@ public class TeamCreator {
 	public Team getTeam(Team team) {
 
 		List<Player> players = team.getPlayers();
-		List<Player> reserved = new ArrayList<Player>();
-		List<Player> playersSelected = new ArrayList<Player>();
-		List<Player> overseas_players = new ArrayList<Player>();
-		List<Player> associate_players = new ArrayList<Player>();
-		List<Player> domestic_players = new ArrayList<Player>();
-		List<Player> indian_players = new ArrayList<Player>();
-
-		for (int index = 0; index < 8; index++) {
-			overseas_players.add(players.get(index));
-		}
-
-		for (int index = 8; index < 10; index++) {
-			associate_players.add(players.get(index));
-		}
-
-		for (int index = 10; index < 12; index++) {
-			domestic_players.add(players.get(index));
-		}
-
-		for (int index = 12; index < 18; index++) {
-			indian_players.add(players.get(index));
-		}
-
+		int[] playersMaxIndex = { 7, 1, 1, 5 };
+		int[] playerCount = { 3, 1, 1, 2 };
 		Random randomGenerator = new Random();
-		for (int index = 0; index < 3; index++) {
-			int random = randomGenerator.nextInt(overseas_players.size() - 1);
-			reserved.add(overseas_players.get(random));
-			overseas_players.remove(random);
+		int startIndex = 0;
+		int i = 0;
+		while (i < 4) {
+			for (int index = 0; index < playerCount[i]; index++) {
+				int playerIndex = randomGenerator.nextInt(playersMaxIndex[i]) + startIndex;
+				Player temp = players.get(playerIndex);
+				players.remove(playerIndex);
+				players.add(temp);
+				playersMaxIndex[i]--;
+			}
+			startIndex += playersMaxIndex[i] + 1;
+			i++;
 		}
-
-		for (int index = 0; index < 1; index++) {
-			int random = randomGenerator.nextInt(associate_players.size() - 1);
-			reserved.add(associate_players.get(random));
-			associate_players.remove(random);
-		}
-
-		for (int index = 0; index < 1; index++) {
-			int random = randomGenerator.nextInt(domestic_players.size() - 1);
-			reserved.add(domestic_players.get(random));
-			domestic_players.remove(random);
-		}
-
-		for (int index = 0; index < 2; index++) {
-			int random = randomGenerator.nextInt(indian_players.size() - 1);
-			reserved.add(indian_players.get(random));
-			indian_players.remove(random);
-		}
-
-		playersSelected.addAll(overseas_players);
-		playersSelected.addAll(associate_players);
-		playersSelected.addAll(domestic_players);
-		playersSelected.addAll(indian_players);
-		playersSelected.addAll(reserved);
-		team.setPlayers(playersSelected);
 
 		return team;
 	}
