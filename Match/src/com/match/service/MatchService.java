@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
 import com.isl.comparators.BowlingSkillsComparator;
@@ -13,13 +14,19 @@ import com.isl.model.MatchPlayer;
 import com.isl.model.Player;
 import com.isl.model.Team;
 import com.isl.service.PlayerDao;
+import com.match.config.MatchConfigurer;
 import com.match.data.MatchConstants;
 import com.match.model.Match;
 import com.match.util.MatchUtil;
 
+/**
+ * 
+ * @author PUSHPAK
+ *
+ */
 public class MatchService {
 		
-	private PlayerDao playerDao = new PlayerDao();
+	private PlayerDao playerDao = (PlayerDao) MatchConfigurer.getInstance(PlayerDao.class);
 	private int MATCH_END_INDEX = MatchConstants.MATCH_END_INDEX;
 	private static final String ROLE = "role";
 	private static final String BATTING_SKILLS = "batting_skills";
@@ -33,7 +40,7 @@ public class MatchService {
 	/**
 	 * Initialzes invalid result map
 	 */
-	public void initializeInValidResults() {
+	static {
 		
 		Map<Integer, Integer> invalidResults = new HashMap<Integer, Integer>();
 		Map<Integer, Integer> invalidExtraResults = new HashMap<Integer, Integer>();
@@ -53,7 +60,7 @@ public class MatchService {
 	/**
 	 * Initializes pitch factors
 	 */
-	public void initializePitchFactors() {
+	static {
 		
 		Map<String, String> pitchFactors = new HashMap<String, String>();
 		pitchFactors.put(MatchConstants.SPINNER, MatchConstants.CRUMBLING);
@@ -134,6 +141,19 @@ public class MatchService {
 		team.setOversMap(oversMap);
 	}
 	
+	/**
+	 * Updates wicket stack for hat-trick checking
+	 * @param player
+	 */
+	public void updateWicketStack(Player player) {
+		
+		Stack<Byte> stack = player.getMatchPlayer().getWicketsStack();
+		if(stack.empty()) {
+			stack.push((byte) 0);
+		} else {
+			
+		}
+	}
 	/**
 	 * Updates statistical records for match {@link Match}
 	 * @param match

@@ -17,8 +17,8 @@ import com.match.model.Extra;
  */
 public class ScoreEngine {
 	
-	Random randomGenerator = new Random();
-	private GeneralService generalService = (GeneralService) MatchConfigurer.getInstance("GeneralService");
+	Random randomGenerator = (Random) MatchConfigurer.getInstance(Random.class);
+	private GeneralService generalService = (GeneralService) MatchConfigurer.getInstance(GeneralService.class);
 	
 	public int getResultForDelievery(Player batsman, Player bowler, MatchFactors matchFactors, int score, int wickets, LinkedList<Integer> partnerships){
 		

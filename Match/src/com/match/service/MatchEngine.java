@@ -54,8 +54,8 @@ public class MatchEngine {
 	private Player max;
 	public void runMatchEngine(Team team1, Team team2) {
 		
-		generalService = (GeneralService) MatchConfigurer.getInstance("GeneralService");
-		matchService = (MatchService) MatchConfigurer.getInstance("MatchService");
+		generalService = (GeneralService) MatchConfigurer.getInstance(GeneralService.class);
+		matchService = (MatchService) MatchConfigurer.getInstance(MatchService.class);
 		rainInterruptionReducedOvers = generalService.checkForRainInteruption();
 		if(!isMatchTied) {
 			match = runPreMatchEngine(team1, team2);
@@ -105,9 +105,9 @@ public class MatchEngine {
 		bowling_team = bowlingTeam;
 		partnerships = new LinkedList<Integer>();
 		partnerships.add(null);
-		scoreEngine = (ScoreEngine) MatchConfigurer.getInstance("ScoreEngine");
+		scoreEngine = (ScoreEngine) MatchConfigurer.getInstance(ScoreEngine.class);
 		if(match.getMatchFactors() == null) {
-			matchFactors = (MatchFactors) MatchConfigurer.getInstance("MatchFactors");
+			matchFactors = (MatchFactors) MatchConfigurer.getInstance(MatchFactors.class);
 			match.setMatchFactors(matchFactors);
 		} else {
 			matchFactors = matchService.resetMatchFactors(match.getMatchFactors());
@@ -245,8 +245,8 @@ public class MatchEngine {
 
 	public Match runPreMatchEngine(Team team1, Team team2) {
 		
-		Match match = new Match();
-		Random randomGenerator = new Random();
+		Match match = (Match) MatchConfigurer.getInstance(Match.class);
+		Random randomGenerator = (Random) MatchConfigurer.getInstance(Random.class);
 		String tossWinner = null;
 		String batting_team = null;
 		

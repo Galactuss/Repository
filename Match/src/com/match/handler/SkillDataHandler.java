@@ -6,7 +6,7 @@ import com.match.service.GeneralService;
 
 public class SkillDataHandler {
 	
-	private static GeneralService generalService = (GeneralService) MatchConfigurer.getInstance("GeneralService");
+	private static GeneralService generalService = (GeneralService) MatchConfigurer.getInstance(GeneralService.class);
 	public static int dotChance(Player batsman, Player bowler) {
 		
 		int chance = batsman.getBatting_skills() - bowler.getBowling_skills();

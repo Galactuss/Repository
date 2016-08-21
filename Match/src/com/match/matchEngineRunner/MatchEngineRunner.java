@@ -31,14 +31,14 @@ public class MatchEngineRunner {
 		boolean validIndex = false;
 		boolean runAuction = false;
 		boolean isError = false;
-		matchService = (MatchService) MatchConfigurer.getInstance("MatchService");
+		matchService = (MatchService) MatchConfigurer.getInstance(MatchService.class);
 		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in);
 		while (!runAuction) {
 			System.out.println("Do you want to run auction?(yes/no)");
 			run = scanner.next();
 			if (("yes").equals(run)) {
-				AuctionMachine auctionMachine = new AuctionMachine();
+				AuctionMachine auctionMachine = (AuctionMachine) MatchConfigurer.getInstance(AuctionMachine.class);
 				auctionMachine.runAuction();
 			}
 			runAuction = true;
@@ -115,8 +115,6 @@ public class MatchEngineRunner {
 			com.isl.dataWriter.DataWriter dataWriter = new com.isl.dataWriter.DataWriter();
 			dataWriter.writeToFile(team);
 		}
-		matchService.initializeInValidResults();
-		matchService.initializePitchFactors();
 		MatchEngine matchEngine = new MatchEngine();
 		matchEngine.runMatchEngine(teams.get(0), teams.get(1));
 
