@@ -9,7 +9,7 @@ import com.cricket.data.AuctionConstants;
 import com.isl.model.Player;
 import com.isl.model.Team;
 import com.isl.service.TeamCreator;
-import com.match.config.MatchConfigurer;
+import com.match.config.InstanceProvider;
 import com.match.service.MatchEngine;
 import com.match.service.MatchService;
 import com.match.service.TeamSelector;
@@ -31,14 +31,14 @@ public class MatchEngineRunner {
 		boolean validIndex = false;
 		boolean runAuction = false;
 		boolean isError = false;
-		matchService = (MatchService) MatchConfigurer.getInstance(MatchService.class);
+		matchService = InstanceProvider.getInstance(MatchService.class);
 		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in);
 		while (!runAuction) {
 			System.out.println("Do you want to run auction?(yes/no)");
 			run = scanner.next();
 			if (("yes").equals(run)) {
-				AuctionMachine auctionMachine = (AuctionMachine) MatchConfigurer.getInstance(AuctionMachine.class);
+				AuctionMachine auctionMachine = InstanceProvider.getInstance(AuctionMachine.class);
 				auctionMachine.runAuction();
 			}
 			runAuction = true;

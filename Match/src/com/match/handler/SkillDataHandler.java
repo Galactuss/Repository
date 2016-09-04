@@ -1,12 +1,12 @@
 package com.match.handler;
 
 import com.isl.model.Player;
-import com.match.config.MatchConfigurer;
+import com.match.config.InstanceProvider;
 import com.match.service.GeneralService;
 
 public class SkillDataHandler {
 	
-	private static GeneralService generalService = (GeneralService) MatchConfigurer.getInstance(GeneralService.class);
+	private static GeneralService generalService = InstanceProvider.getInstance(GeneralService.class);
 	public static int dotChance(Player batsman, Player bowler) {
 		
 		int chance = batsman.getBatting_skills() - bowler.getBowling_skills();
