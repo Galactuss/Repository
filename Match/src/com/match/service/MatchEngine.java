@@ -9,7 +9,7 @@ import java.util.Random;
 import com.isl.comparators.BattingSkillsComparator;
 import com.isl.model.Player;
 import com.isl.model.Team;
-import com.match.config.MatchConfigurer;
+import com.match.config.InstanceProvider;
 import com.match.data.CommentryConstants;
 import com.match.data.MatchConstants;
 import com.match.service.MatchFactors;
@@ -54,8 +54,8 @@ public class MatchEngine {
 	private Player max;
 	public void runMatchEngine(Team team1, Team team2) {
 		
-		generalService = (GeneralService) MatchConfigurer.getInstance(GeneralService.class);
-		matchService = (MatchService) MatchConfigurer.getInstance(MatchService.class);
+		generalService = InstanceProvider.getInstance(GeneralService.class);
+		matchService = InstanceProvider.getInstance(MatchService.class);
 		rainInterruptionReducedOvers = generalService.checkForRainInteruption();
 		if(!isMatchTied) {
 			match = runPreMatchEngine(team1, team2);
@@ -105,9 +105,9 @@ public class MatchEngine {
 		bowling_team = bowlingTeam;
 		partnerships = new LinkedList<Integer>();
 		partnerships.add(null);
-		scoreEngine = (ScoreEngine) MatchConfigurer.getInstance(ScoreEngine.class);
+		scoreEngine = InstanceProvider.getInstance(ScoreEngine.class);
 		if(match.getMatchFactors() == null) {
-			matchFactors = (MatchFactors) MatchConfigurer.getInstance(MatchFactors.class);
+			matchFactors = InstanceProvider.getInstance(MatchFactors.class);
 			match.setMatchFactors(matchFactors);
 		} else {
 			matchFactors = matchService.resetMatchFactors(match.getMatchFactors());
@@ -145,6 +145,11 @@ public class MatchEngine {
 					getValidResult();
 				} else {
 					resultPerBall = scoreEngine.getResultForDelievery(onstrike, bowler, matchFactors, score_batting, wickets_batting, partnerships);
+					if(resultPerBall == 7) {
+						bowler.getMatchPlayer().setHattrickCount(bowler.getMatchPlayer().getHattrickCount() + 1);
+					} else {
+						bowler.getMatchPlayer().setHattrickCount(0);
+					}
 				}
 				match.setFreehit(false);
 				if(resultPerBall != 5 && resultPerBall != 7) {
@@ -207,6 +212,10 @@ public class MatchEngine {
 					onstrike.getMatchPlayer().setNotOut(false);
 					updatePartnerships();
 					partnership = 0;
+					if(bowler.getMatchPlayer().getHattrickCount() >= 3) {
+						content = "That's hattrick!!!";
+						generalService.writeMatchData(content);
+					}
 					if(index != 11) {
 						getNewBatsman(batting_team);
 					} else {
@@ -245,8 +254,8 @@ public class MatchEngine {
 
 	public Match runPreMatchEngine(Team team1, Team team2) {
 		
-		Match match = (Match) MatchConfigurer.getInstance(Match.class);
-		Random randomGenerator = (Random) MatchConfigurer.getInstance(Random.class);
+		Match match = InstanceProvider.getInstance(Match.class);
+		Random randomGenerator = InstanceProvider.getInstance(Random.class);
 		String tossWinner = null;
 		String batting_team = null;
 		

@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
-import com.match.config.MatchConfigurer;
+import com.match.config.InstanceProvider;
 import com.match.data.CommentryConstants;
 import com.match.data.MatchConstants;
 import com.match.model.Match;
@@ -161,7 +161,7 @@ public class GeneralService {
 	 */
 	public int checkForRainInteruption() {
 		
-		WebConnector connector = (WebConnector) MatchConfigurer.getInstance(WebConnector.class);
+		WebConnector connector = InstanceProvider.getInstance(WebConnector.class);
 		URLConnection connection  = connector.getConnetion();
 		boolean hasRainInterrupted = connector.CheckForRainFall(connection);
 		if(hasRainInterrupted) {

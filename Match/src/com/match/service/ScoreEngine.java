@@ -5,7 +5,7 @@ import java.util.Random;
 
 import com.isl.model.Player;
 import com.isl.model.Team;
-import com.match.config.MatchConfigurer;
+import com.match.config.InstanceProvider;
 import com.match.data.CommentryConstants;
 import com.match.service.MatchFactors;
 import com.match.model.Extra;
@@ -17,8 +17,8 @@ import com.match.model.Extra;
  */
 public class ScoreEngine {
 	
-	Random randomGenerator = (Random) MatchConfigurer.getInstance(Random.class);
-	private GeneralService generalService = (GeneralService) MatchConfigurer.getInstance(GeneralService.class);
+	Random randomGenerator = InstanceProvider.getInstance(Random.class);
+	private GeneralService generalService = (GeneralService) InstanceProvider.getInstance(GeneralService.class);
 	
 	public int getResultForDelievery(Player batsman, Player bowler, MatchFactors matchFactors, int score, int wickets, LinkedList<Integer> partnerships){
 		

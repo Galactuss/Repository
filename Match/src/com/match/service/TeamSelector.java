@@ -34,7 +34,6 @@ public class TeamSelector {
 	public Team balanceTeam(Team fullteam) {
 
 		Team team = fullteam;
-		//Team reserved = teams[1];
 		List<Player> replacements;
 		int count = 0;
 		List<Player> batsmen = team.getPlayers().stream()
