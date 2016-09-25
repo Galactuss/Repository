@@ -16,12 +16,12 @@ import com.match.data.MatchConstants;
  */
 public class TeamSelector {
 
-	private final String BATSMAN = MatchConstants.BATSMAN;
-	private final String BISKILLED = MatchConstants.BISKILLED;
-	private final String BOWLER = MatchConstants.BOWLER;
-	private final int MAX_ALLOWED_BOWLERS = 4;
-	private final int MAX_ALLOWED_BATSMEN = 7;
-	private final int START_INDEX = 0;
+	private static final String BATSMAN = MatchConstants.BATSMAN;
+	private static final String BISKILLED = MatchConstants.BISKILLED;
+	private static final String BOWLER = MatchConstants.BOWLER;
+	private static final int MAX_ALLOWED_BOWLERS = 4;
+	private static final int MAX_ALLOWED_BATSMEN = 7;
+	private static final int START_INDEX = 0;
 
 	/**
 	 * Returns a balanced team from randomly generated team

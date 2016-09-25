@@ -113,7 +113,7 @@ public class MatchUtil {
 	 * @param methodType
 	 * @return
 	 */
-	public static Method getMethod(Class<?> clazz, String parameter, String methodType) {
+	protected static Method getMethod(Class<?> clazz, String parameter, String methodType) {
 		
 		String methodName = methodType + parameter;
 		Method[] methods = clazz.getDeclaredMethods();

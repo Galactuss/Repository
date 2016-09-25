@@ -8,6 +8,7 @@ public class Player implements Comparable<Player>{
 	private int bowling_skills;
 	private int position;
 	private String name;
+	private String lastName;
 	private String role;
 	private String bowling_type;
 	private String country;
@@ -84,6 +85,15 @@ public class Player implements Comparable<Player>{
 	
 	public void setName(String name) {
 		this.name = name;
+		setLastName(this.name.substring(this.name.lastIndexOf(" ")+1));
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+	
+	private void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 	
 	public String getCountry() {

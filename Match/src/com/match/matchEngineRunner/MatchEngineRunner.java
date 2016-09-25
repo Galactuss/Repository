@@ -112,7 +112,7 @@ public class MatchEngineRunner {
 			 * team.setOversMap(oversMap);
 			 */
 			teams.add(team);
-			com.isl.dataWriter.DataWriter dataWriter = new com.isl.dataWriter.DataWriter();
+			com.isl.dataWriter.DataWriter dataWriter = InstanceProvider.getInstance(com.isl.dataWriter.DataWriter.class);
 			dataWriter.writeToFile(team);
 		}
 		MatchEngine matchEngine = new MatchEngine();

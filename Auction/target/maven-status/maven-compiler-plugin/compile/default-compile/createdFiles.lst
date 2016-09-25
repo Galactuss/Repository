@@ -1,6 +1,0 @@
-com\cricket\util\AuctionUtil.class
-com\cricket\auctionMachine\AuctionMachine.class
-com\cricket\model\Squad.class
-com\cricket\service\PlayersService.class
-com\cricket\data\AuctionConstants.class
-com\cricket\dataWriter\DataWriter.class

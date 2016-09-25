@@ -25,11 +25,11 @@ public class GeneralService {
 
 	/** Variables declaration */
 	private Random randomGenerator = InstanceProvider.getInstance(Random.class);
-	private String DATE_FORMAT = MatchConstants.DATE_FROMAT;
-	private String FLOAT_FORMAT = MatchConstants.FLOAT_FORMAT;
-	private String DATA_DIR = MatchConstants.DATA_DIR;
-	private String FILE_NAME = MatchConstants.FILE_NAME;
-	private String TEXTFILE_EXTENSION = MatchConstants.TEXTFILE_EXTENSION;
+	private static final String DATE_FORMAT = MatchConstants.DATE_FROMAT;
+	private static final String FLOAT_FORMAT = MatchConstants.FLOAT_FORMAT;
+	private static final String DATA_DIR = MatchConstants.DATA_DIR;
+	private static final String FILE_NAME = MatchConstants.FILE_NAME;
+	private static final String TEXTFILE_EXTENSION = MatchConstants.TEXTFILE_EXTENSION;
 	private Match match;
 
 	/**

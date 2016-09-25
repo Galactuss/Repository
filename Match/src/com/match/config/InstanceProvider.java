@@ -42,7 +42,7 @@ public class InstanceProvider {
 			instanceMap = InstanceProvider.instances;
 		}
 		try {
-			Class<?>[] argClasses = new Class[args.length];
+			Class<?>[] argClasses = new Class<?>[args.length];
 			int index = 0;
 			for(Object arg: args) {
 				argClasses[index++] = arg.getClass();

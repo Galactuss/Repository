@@ -4,9 +4,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import org.apache.commons.lang3.*;
 
 import com.cricket.data.AuctionConstants;
 import com.isl.model.Player;
@@ -41,15 +41,10 @@ public class TeamCreator {
 	public Team getSquad(String teamName) {
 
 		Team team = new Team();
+		String[] countries = ArrayUtils.addAll(ArrayUtils.addAll(AuctionConstants.COUNTRIES, AuctionConstants.INDIA), ArrayUtils.addAll(AuctionConstants.ASSOCIATE_COUNTRIES, AuctionConstants.DOMESTIC));
 		team.setName(teamName);
 		List<Player> players = new ArrayList<Player>();
-		List<String> list = new ArrayList<String>();
-		list.addAll(Arrays.asList(AuctionConstants.COUNTRIES));
-		list.add(AuctionConstants.INDIA);
-		list.add(AuctionConstants.DOMESTIC);
-		list.addAll(Arrays.asList(AuctionConstants.ASSOCIATE_COUNTRIES));
-		Object[] countries = list.toArray();
-
+		
 		BufferedReader br = null;
 
 		try {
@@ -61,12 +56,12 @@ public class TeamCreator {
 
 			while ((sCurrentLine = br.readLine()) != null) {
 				Player player = new Player();
-				for (Object country : countries) {
-					if (sCurrentLine.contains(country.toString())) {
-						String name = sCurrentLine.substring(0, sCurrentLine.indexOf(country.toString()) - 1);
+				for (String country : countries) {
+					if (sCurrentLine.contains(country)) {
+						String name = sCurrentLine.substring(0, sCurrentLine.indexOf(country) - 1);
 						String type = sCurrentLine.substring(sCurrentLine.lastIndexOf(" ") + 1);
 						player.setName(name);
-						player.setCountry(country.toString());
+						player.setCountry(country);
 						player.setType(type);
 						players.add(player);
 					}

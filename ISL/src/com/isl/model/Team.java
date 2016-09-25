@@ -1,22 +1,22 @@
 package com.isl.model;
 
 import java.util.List;
-import java.util.Map;
-
 public class Team {
 	
 	private String name;
 	private List<Player> players;
-	private Map<Integer, Player> oversMap;
+	private Player[] bowling_lineup;
 	private int score = 0;
 	private int wickets;
 	
-	public Map<Integer, Player> getOversMap() {
-		return oversMap;
+	
+
+	public Player[] getBowling_lineup() {
+		return bowling_lineup;
 	}
 
-	public void setOversMap(Map<Integer, Player> oversMap) {
-		this.oversMap = oversMap;
+	public void setBowling_lineup(Player[] bowling_lineup) {
+		this.bowling_lineup = bowling_lineup;
 	}
 
 	public String getName() {

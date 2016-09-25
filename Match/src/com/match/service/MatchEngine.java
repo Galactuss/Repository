@@ -3,7 +3,6 @@ package com.match.service;
 import java.io.BufferedWriter;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Random;
 
 import com.isl.comparators.BattingSkillsComparator;
@@ -55,7 +54,6 @@ public class MatchEngine {
 
 	public void runMatchEngine(Team team1, Team team2) {
 		
-		long before = System.currentTimeMillis();
 		generalService = InstanceProvider.getInstance(GeneralService.class);
 		matchService = InstanceProvider.getInstance(MatchService.class);
 		rainInterruptionReducedOvers = generalService.checkForRainInteruption();
@@ -96,8 +94,6 @@ public class MatchEngine {
 			generalService.closeWriter(writer);
 			matchService.updateCareerRecords(match);
 			System.out.println("The match is over.");
-			long after = System.currentTimeMillis();
-			System.out.println(after-before);
 		}
 	}
 
@@ -120,7 +116,7 @@ public class MatchEngine {
 		Collections.sort(batting_team.getPlayers(), new BattingSkillsComparator());
 		getOpeners();
 		index = 1;
-		Map<Integer, Player> oversMap = bowling_team.getOversMap();
+		Player[] bowling_lineup = bowling_team.getBowling_lineup();
 		displayTarget(batting_team);
 		displayOpeners(batting_team);
 		generalService.addTimeLag(2);
@@ -138,7 +134,7 @@ public class MatchEngine {
 			} else if (overIndex > max_overs * 4 / 5) {
 				setDeathOverFactors(matchFactors);
 			}
-			displayBowler(oversMap);
+			displayBowler(bowling_lineup);
 			setPitchFactors();
 			ballIndex = 1;
 			for (ballIndex = MatchConstants.OVER_START_INDEX; ballIndex <= MatchConstants.OVER_END_INDEX; ballIndex++) {
@@ -449,15 +445,19 @@ public class MatchEngine {
 	public void startPowerplay(MatchFactors matchFactors) {
 
 		matchFactors.setPowerplay_factor(true);
-		content = "Powerplay restrictions for first " + (max_overs / 3) + " overs.";
-		generalService.writeMatchData(content);
+		if (!isMatchTied) {
+			content = "Powerplay restrictions for first " + (max_overs / 3) + " overs.";
+			generalService.writeMatchData(content);
+		}
 	}
 
 	public void endPowerplay(MatchFactors matchFactors) {
 
 		matchFactors.setPowerplay_factor(false);
-		content = "End of manadatory powerplay.";
-		generalService.writeMatchData(content);
+		if (!isMatchTied) {
+			content = "End of manadatory powerplay.";
+			generalService.writeMatchData(content);
+		}
 	}
 
 	public void setDeathOverFactors(MatchFactors matchFactors) {
@@ -465,9 +465,9 @@ public class MatchEngine {
 		matchFactors.setDeath_overs_factor(true);
 	}
 
-	public void displayBowler(Map<Integer, Player> oversMap) {
+	public void displayBowler(Player[] bowling_lineup) {
 
-		bowler = oversMap.get(overIndex);
+		bowler = bowling_lineup[overIndex-1];
 		content = bowler.getName() + " comes into the action";
 		generalService.writeMatchData(content);
 	}
