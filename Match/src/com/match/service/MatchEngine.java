@@ -12,6 +12,7 @@ import com.match.config.InstanceProvider;
 import com.match.data.CommentryConstants;
 import com.match.data.MatchConstants;
 import com.match.service.MatchFactors;
+import com.match.util.ListUtil;
 import com.match.util.MatchUtil;
 import com.match.model.Extra;
 import com.match.model.Match;
@@ -114,6 +115,7 @@ public class MatchEngine {
 			matchFactors = matchService.resetMatchFactors(match.getMatchFactors());
 		}
 		Collections.sort(batting_team.getPlayers(), new BattingSkillsComparator());
+		ListUtil.shufflePartialList(batting_team.getPlayers(), 1, 6);
 		getOpeners();
 		index = 1;
 		Player[] bowling_lineup = bowling_team.getBowling_lineup();

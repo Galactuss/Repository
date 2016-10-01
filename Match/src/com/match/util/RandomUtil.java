@@ -3,6 +3,9 @@ package com.match.util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
+
+import com.match.config.InstanceProvider;
 
 /**
  * 
@@ -17,7 +20,19 @@ public class RandomUtil {
 	private RandomUtil() {
 
 	}
-
+	
+	/**
+	 * Return random number between the given bounds(inclusive)
+	 * @param lowerBound
+	 * @param upperBound
+	 * @return
+	 */
+	public static int next(int lowerBound, int upperBound) {
+		int diff = upperBound - lowerBound;
+		Random random = InstanceProvider.getInstance(Random.class);
+		return lowerBound + random.nextInt(++diff);
+	}
+	
 	/**
 	 * Return instance of static class RandomGenerator
 	 * 
