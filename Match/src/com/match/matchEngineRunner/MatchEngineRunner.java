@@ -10,6 +10,7 @@ import com.isl.model.Player;
 import com.isl.model.Team;
 import com.isl.service.TeamCreator;
 import com.match.config.InstanceProvider;
+import com.match.model.GameType;
 import com.match.service.MatchEngine;
 import com.match.service.MatchService;
 import com.match.service.TeamSelector;
@@ -28,11 +29,11 @@ public class MatchEngineRunner {
 		int teamIndexOne = 0;
 		int teamIndexTwo = 0;
 		String run = null;
+		GameType gameType;
 		boolean validIndex = false;
 		boolean runAuction = false;
 		boolean isError = false;
 		matchService = InstanceProvider.getInstance(MatchService.class);
-		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in);
 		while (!runAuction) {
 			System.out.println("Do you want to run auction?(yes/no)");
@@ -71,6 +72,14 @@ public class MatchEngineRunner {
 				validIndex = true;
 			}
 		}
+		System.out.println("Match type?(ODI/T20I)");
+		String type = scanner.next();
+		if (("ODI").equals(type)) {
+			gameType = GameType.ODI;
+		} else {
+			gameType = GameType.T20I;
+		}
+		scanner.close();
 		TeamCreator teamCreator = new TeamCreator();
 		TeamSelector teamSelector = new TeamSelector();
 		List<Team> teams = new ArrayList<Team>();
@@ -99,7 +108,7 @@ public class MatchEngineRunner {
 			matchService.setBattingSkills(team);
 			matchService.setBowlingSkills(team);
 			matchService.setBowlingTypes(team);
-			matchService.setBowlingLineup(team);
+			matchService.setWicketKeepingSkills(team);
 			/*
 			 * Map<Integer, Player> oversMap = new HashMap<Integer, Player>();
 			 * System.out.println("Set bowling line-up"); for(int overIndex=1;
@@ -116,7 +125,7 @@ public class MatchEngineRunner {
 			dataWriter.writeToFile(team);
 		}
 		MatchEngine matchEngine = new MatchEngine();
-		matchEngine.runMatchEngine(teams.get(0), teams.get(1));
+		matchEngine.runMatchEngine(teams.get(0), teams.get(1), gameType);
 
 	}
 

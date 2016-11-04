@@ -36,15 +36,17 @@ public interface AuctionConstants {
 	
 	public static final String[] ZIMBABWE_PLAYERS = {"SC Williams", "H Masakadza", "MN Waller", "CB Mpofu", "E Chigumbura", "BV Vitori"};
 	
-	public static final String[] NETHERLANDS_PLAYERS = {"PM Seelaar", "PA van Meekeren", "LV van Beek", "RE van der Merwe", "MR Swart", "TP Visee"};
+	public static final String[] NETHERLANDS_PLAYERS = {"PM Seelaar", "PA van Meekeren", "LV van Beek", "RE van der Merwe", "MR Swart", "SJ Myburgh"};
+	
+	public static final String[] SCOTLAND_PLAYERS = {"RD Berrington", "KJ Coetzer", "AC Evans", "MW Machan", "SM Sharif", "PL Mommsen"};
 	
 	public static final String[][] OVERSEAS_PLAYERS = {AUSTRALIA_PLAYERS, ENGLAND_PLAYERS, NEW_ZEALAND_PLAYERS, PAKISTAN_PLAYERS, SOUTH_AFRICA_PLAYERS, SRI_LANKA_PLAYERS, WEST_INDIES_PLAYERS};
 	
-	public static final String[][] ASSOCIATE_PLAYERS ={AFGHANISTAN_PLAYERS, BANGLADESH_PLAYERS, IRELAND_PLAYERS, NETHERLANDS_PLAYERS, ZIMBABWE_PLAYERS};
+	public static final String[][] ASSOCIATE_PLAYERS ={AFGHANISTAN_PLAYERS, BANGLADESH_PLAYERS, IRELAND_PLAYERS, NETHERLANDS_PLAYERS, SCOTLAND_PLAYERS, ZIMBABWE_PLAYERS};
 	
 	public static final String[] COUNTRIES = {"AUSTRALIA", "ENGLAND", "NEW ZEALAND", "PAKISTAN", "SOUTH AFRICA", "SRI LANKA", "WEST INDIES"}; 
 	
-	public static final String[] ASSOCIATE_COUNTRIES = {"AFGHANISTAN", "BANGLADESH", "IRELAND", "NETHERLANDS","ZIMBABWE"};
+	public static final String[] ASSOCIATE_COUNTRIES = {"AFGHANISTAN", "BANGLADESH", "IRELAND", "NETHERLANDS", "SCOTLAND", "ZIMBABWE"};
 	
 	public static final String DATA_DIR = "C:\\Users\\Pushpak\\data\\";
 	

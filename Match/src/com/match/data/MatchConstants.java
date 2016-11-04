@@ -28,9 +28,7 @@ public interface MatchConstants {
 	public static final String BOWLER = "Bowler";
 	
 	public static final int MATCH_START_INDEX = 1;
-	
-	public static final int MATCH_END_INDEX = 20;
-	
+		
 	public static final int OVER_START_INDEX = 1;
 	
 	public static final int OVER_END_INDEX = 6;

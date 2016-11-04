@@ -6,6 +6,7 @@ public class Player implements Comparable<Player>{
 	private int id;
 	private int batting_skills;
 	private int bowling_skills;
+	private int wicketkeeping_skills;
 	private int position;
 	private String name;
 	private String lastName;
@@ -29,6 +30,14 @@ public class Player implements Comparable<Player>{
 
 	public void setBowling_type(String bowling_type) {
 		this.bowling_type = bowling_type;
+	}
+	
+	public int getWicketkeeping_skills() {
+		return wicketkeeping_skills;
+	}
+
+	public void setWicketkeeping_skills(int wicketkeeping_skills) {
+		this.wicketkeeping_skills = wicketkeeping_skills;
 	}
 
 	public int getPosition() {

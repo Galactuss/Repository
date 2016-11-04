@@ -32,14 +32,18 @@ public class MatchService {
 	private static final String ROLE = "role";
 	private static final String BATTING_SKILLS = "batting_skills";
 	private static final String BOWLING_SKILLS = "bowling_skills";
+	private static final String WICKETKEEPING_SKILLS = "wicketkeeping_skills";
 	private static final String BOWLING_TYPES = "bowling_type";
 	private static final String MATCHPLAYER = "matchPlayer";
 	public static Map<Integer, Integer> invalidResults;
 	public static Map<Integer, Integer> invalidExtraResults;
 	public static Map<String, String> pitchFactors;
+	private static int[] savedLineup;
+	private static int counter = 0;
+	private static final long MAX_COUNTER_VALUE = 100000000;
 
 	/**
-	 * Initialzes invalid result map
+	 * Initializes invalid result map
 	 */
 	static {
 
@@ -100,6 +104,16 @@ public class MatchService {
 	}
 
 	/**
+	 * Sets wicketkeeping skills for team players
+	 * 
+	 * @param team
+	 */
+	public void setWicketKeepingSkills(Team team) {
+
+		MatchUtil.set(team, WICKETKEEPING_SKILLS, PlayerDao.class);
+	}
+
+	/**
 	 * Sets bowling types for team players
 	 * 
 	 * @param team
@@ -120,17 +134,39 @@ public class MatchService {
 	}
 
 	/**
-	 * Sets bowling line-up
+	 * Sets wicketkeeper for the team
 	 * 
 	 * @param team
 	 */
-	public void setBowlingLineup(Team team) {
+	public void setWicketKeeper(Team team) {
 
+		List<Player> players = team.getPlayers();
+		Player wicketKeeper = players.get(0);
+		int max_skills = 0;
+		int player_skills;
+		for (Player player : players) {
+			player_skills = player.getWicketkeeping_skills();
+			if (max_skills < player_skills) {
+				max_skills = player_skills;
+				wicketKeeper = player;
+			}
+		}
+		team.setWicket_keeper(wicketKeeper);
+	}
+
+	/**
+	 * Sets bowling lineup
+	 * 
+	 * @param team
+	 * @param max_overs
+	 */
+	public void setBowlingLineup(Team team, int max_overs) {
+		
 		Collections.sort(team.getPlayers(), new BowlingSkillsComparator());
 		List<Player> players = team.getPlayers().stream().filter(player -> team.getPlayers().indexOf(player) < 5)
 				.collect(Collectors.toList());
 		Collections.sort(players, new BowlingTypeComparator());
-		setBowlingLineup(new Player[20], players, 0, new int[5], 0, 0, team);
+		setBowlingLineup(new int[max_overs], players, 0, new int[5], 0, 0, team);
 		stopExecution = false;
 	}
 
@@ -145,25 +181,41 @@ public class MatchService {
 	 * @param checked
 	 * @param team
 	 */
-	protected void setBowlingLineup(Player[] players, List<Player> playerList, int index, int[] overs, int count,
+	protected void setBowlingLineup(int[] players, List<Player> playerList, int index, int[] overs, int count,
 			int checked, Team team) {
 		
+		counter++;
+		if(counter > MAX_COUNTER_VALUE) {
+			Player[] playerArr = new Player[players.length];
+			int arrIndex = 0;
+			for(int playerIndex: savedLineup) {
+				playerArr[arrIndex++] = playerList.get(playerIndex);
+			}
+			team.setBowling_lineup(playerArr);
+			stopExecution = true;
+		}
 		if (stopExecution) {
 			return;
 		}
-		if (count == 20) {
-			team.setBowling_lineup(players);
+		if (count == players.length) {
+			savedLineup = players;
+			Player[] playerArr = new Player[players.length];
+			int arrIndex = 0;
+			for(int playerIndex: players) {
+				playerArr[arrIndex++] = playerList.get(playerIndex);
+			}
+			team.setBowling_lineup(playerArr);
 			stopExecution = true;
 			return;
-		} else if (checked == 20) {
+		} else if (checked == players.length) {
 			return;
 		}
 		boolean isAdded = false;
 		checked++;
 		RandomGenerator randomGenerator = RandomUtil.getRandomGenerator(4);
-		if (overs[index] != 4) {
-			if (count == 0 || (count > 0 && !players[count - 1].equals(playerList.get(index)))) {
-				players[count++] = playerList.get(index);
+		if (overs[index] != players.length/5) {
+			if (count == 0 || (count > 0 && !playerList.get(players[count - 1]).equals(playerList.get(index)))) {
+				players[count++] = index;
 				overs[index]++;
 				isAdded = true;
 			}
@@ -175,9 +227,10 @@ public class MatchService {
 			checkOtherAlternatives(players, playerList, index, overs, count, checked, team, randomGenerator);
 		}
 	}
-	
+
 	/**
 	 * Check all other alternative ways of selecting bowling lineup
+	 * 
 	 * @param players
 	 * @param playerList
 	 * @param index
@@ -186,9 +239,9 @@ public class MatchService {
 	 * @param checked
 	 * @param randomGenerator
 	 */
-	protected void checkOtherAlternatives(Player[] players, List<Player> playerList, int index, int[] overs, int count,
+	protected void checkOtherAlternatives(int[] players, List<Player> playerList, int index, int[] overs, int count,
 			int checked, Team team, RandomGenerator randomGenerator) {
-		
+
 		int nextIndex = (index + randomGenerator.generateUniqueRandom()) % 5;
 		setBowlingLineup(players, playerList, nextIndex, overs, count, checked, team);
 		nextIndex = (index + randomGenerator.generateUniqueRandom()) % 5;
@@ -198,6 +251,7 @@ public class MatchService {
 		nextIndex = (index + randomGenerator.generateUniqueRandom()) % 5;
 		setBowlingLineup(players, playerList, nextIndex, overs, count, checked, team);
 	}
+
 	/**
 	 * Updates statistical records for match {@link Match}
 	 * 
@@ -288,7 +342,7 @@ public class MatchService {
 	public boolean validateResult(int required, int result) {
 
 		if (MatchService.invalidResults.containsKey(required)) {
-			if (MatchService.invalidResults.get(required).compareTo(result) == 0) {
+			if (MatchService.invalidResults.get(required) == result) {
 				return false;
 			}
 		}

@@ -2,6 +2,7 @@ package com.match.service;
 
 import java.io.BufferedWriter;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -15,7 +16,12 @@ import com.match.service.MatchFactors;
 import com.match.util.ListUtil;
 import com.match.util.MatchUtil;
 import com.match.model.Extra;
+import com.match.model.Game;
+import com.match.model.GameType;
 import com.match.model.Match;
+import com.match.model.ODI;
+import com.match.model.Range;
+import com.match.model.TtwentyI;
 
 /**
  * 
@@ -52,19 +58,27 @@ public class MatchEngine {
 	private MatchFactors matchFactors;
 	private LinkedList<Integer> partnerships;
 	private Player max;
+	private Game game;
+	private Range current_powerplay;
 
-	public void runMatchEngine(Team team1, Team team2) {
-		
+	public void runMatchEngine(Team team1, Team team2, GameType gameType) {
+
+		if (gameType.equals(GameType.ODI)) {
+			game = InstanceProvider.getInstance(ODI.class);
+		} else {
+			game = InstanceProvider.getInstance(TtwentyI.class);
+		}
+		ScoreEngine.game = game;
 		generalService = InstanceProvider.getInstance(GeneralService.class);
 		matchService = InstanceProvider.getInstance(MatchService.class);
 		rainInterruptionReducedOvers = generalService.checkForRainInteruption();
 		if (!isMatchTied) {
 			match = runPreMatchEngine(team1, team2);
 			writer = generalService.getWriter(match);
-		}
-		if (rainInterruptionReducedOvers != 0) {
-			System.out.println("Match has been interrupted by rain and is reduced to " + rainInterruptionReducedOvers
-					+ " overs per side.");
+			if (rainInterruptionReducedOvers != 0) {
+				System.out.println("Match has been interrupted by rain and is reduced to "
+						+ rainInterruptionReducedOvers + " overs per side.");
+			}
 		}
 		generalService.addTimeLag(3);
 		startMatchEngine(match.getBatting_team(), match.getBowling_team(), match);
@@ -88,7 +102,7 @@ public class MatchEngine {
 			initializeSuperOver();
 			System.out.println(MatchConstants.NEWLINE);
 			generalService.addTimeLag(5);
-			runMatchEngine(team1, team2);
+			runMatchEngine(team1, team2, gameType);
 		} else {
 			getManOfTheMatch(match);
 			displayManOfTheMatch(match);
@@ -115,25 +129,31 @@ public class MatchEngine {
 			matchFactors = matchService.resetMatchFactors(match.getMatchFactors());
 		}
 		Collections.sort(batting_team.getPlayers(), new BattingSkillsComparator());
-		ListUtil.shufflePartialList(batting_team.getPlayers(), 1, 6);
+		setWicketKeeper();
+		ListUtil.shufflePartialList(batting_team.getPlayers(), 3, 6);
 		getOpeners();
 		index = 1;
-		Player[] bowling_lineup = bowling_team.getBowling_lineup();
 		displayTarget(batting_team);
-		displayOpeners(batting_team);
-		generalService.addTimeLag(2);
 		overIndex = 1;
 		setMaximumOvers(matchFactors);
+		matchService.setBowlingLineup(bowlingTeam, max_overs);
+		Player[] bowling_lineup = bowling_team.getBowling_lineup();
+		displayOpeners(batting_team);
+		generalService.addTimeLag(2);
 		if (isMatchTied) {
 			setSuperOverFactors(matchFactors);
 		}
-		startPowerplay(matchFactors);
+		current_powerplay = game.getPowerplays().get(0);
 		for (overIndex = MatchConstants.MATCH_START_INDEX; overIndex <= max_overs; overIndex++) {
 			runsPerOver = 0;
 			generalService.addTimeLag(5);
-			if (overIndex == (max_overs / 3 + 1)) {
+			if (isStartofPowerplay()) {
+				startPowerplay(matchFactors);
+			} else if(isEndofPowerplay()) {
 				endPowerplay(matchFactors);
-			} else if (overIndex > max_overs * 4 / 5) {
+			}
+			if (overIndex > game.getDeathOverThreshold()
+					|| ((rainInterruptionReducedOvers != 0) && overIndex > 4 * max_overs / 5)) {
 				setDeathOverFactors(matchFactors);
 			}
 			displayBowler(bowling_lineup);
@@ -257,7 +277,7 @@ public class MatchEngine {
 		return 0;
 	}
 
-	public Match runPreMatchEngine(Team team1, Team team2) {
+	protected Match runPreMatchEngine(Team team1, Team team2) {
 
 		Match match = InstanceProvider.getInstance(Match.class);
 		Random randomGenerator = InstanceProvider.getInstance(Random.class);
@@ -306,13 +326,18 @@ public class MatchEngine {
 		return match;
 	}
 
-	public void initializeSuperOver() {
+	protected void setWicketKeeper() {
+
+		matchService.setWicketKeeper(bowling_team);
+	}
+
+	protected void initializeSuperOver() {
 
 		content = "Super over is uderway.";
 		generalService.writeMatchData(content);
 	}
 
-	public void getOpeners() {
+	protected void getOpeners() {
 
 		onstrike = batting_team.getPlayers().get(0);
 		onstrike.getMatchPlayer().setNotOut(true);
@@ -320,9 +345,9 @@ public class MatchEngine {
 		non_strike.getMatchPlayer().setNotOut(true);
 	}
 
-	public void setMaximumOvers(MatchFactors matchFactors) {
+	protected void setMaximumOvers(MatchFactors matchFactors) {
 
-		if (rainInterruptionReducedOvers != 0) {
+		if (rainInterruptionReducedOvers != 0 && !isMatchTied) {
 			max_overs = rainInterruptionReducedOvers;
 			if (max_overs < 15) {
 				matchFactors.setReduced_overs_factor(true);
@@ -330,11 +355,12 @@ public class MatchEngine {
 		} else if (isMatchTied) {
 			max_overs = 1;
 		} else {
-			max_overs = MatchConstants.MATCH_END_INDEX;
+			max_overs = game.getMax_overs();
+			ScoreEngine.max = max_overs * 600;
 		}
 	}
 
-	public void checkForMileStone(Player onstrike) {
+	protected void checkForMileStone(Player onstrike) {
 
 		if (onstrike.getMatchPlayer().getRuns_scored() > 49 && !onstrike.getMatchPlayer().isHalf_century()) {
 			onstrike.getMatchPlayer().setHalf_century(true);
@@ -347,7 +373,7 @@ public class MatchEngine {
 		}
 	}
 
-	public void displayTarget(Team batting_team) {
+	protected void displayTarget(Team batting_team) {
 
 		if (batting_team.getName().equals(match.getBowling_team().getName())) {
 			content = "Target: " + (match.getBatting_team().getScore() + 1);
@@ -356,7 +382,7 @@ public class MatchEngine {
 		}
 	}
 
-	public void getValidResult() {
+	protected void getValidResult() {
 
 		boolean validResult = false;
 		while (!validResult) {
@@ -366,47 +392,47 @@ public class MatchEngine {
 		}
 	}
 
-	public void changeStrike() {
+	protected void changeStrike() {
 
 		Player temp = onstrike;
 		onstrike = non_strike;
 		non_strike = temp;
 	}
 
-	public void displayMaidenOverCommentry() {
+	protected void displayMaidenOverCommentry() {
 
 		content = "It's a maiden over.";
 		generalService.writeMatchData(content);
 	}
 
-	public void updateScoreBatting(int resultPerBall) {
+	protected void updateScoreBatting(int resultPerBall) {
 
 		score_batting += resultPerBall;
 	}
 
-	public void updateRunsPerOver(int resultPerBall) {
+	protected void updateRunsPerOver(int resultPerBall) {
 
 		runsPerOver += resultPerBall;
 	}
 
-	public void updatePartnership(int resultPerBall) {
+	protected void updatePartnership(int resultPerBall) {
 
 		partnership += resultPerBall;
 		partnerships.removeLast();
 		partnerships.add(partnership);
 	}
 
-	public void updatePartnerships() {
+	protected void updatePartnerships() {
 
 		partnerships.add(null);
 	}
 
-	public void updateWicketsBatting() {
+	protected void updateWicketsBatting() {
 
 		wickets_batting++;
 	}
 
-	public void getNewBatsman(Team batting_team) {
+	protected void getNewBatsman(Team batting_team) {
 
 		onstrike = batting_team.getPlayers().get(index);
 		onstrike.getMatchPlayer().setNotOut(true);
@@ -414,46 +440,72 @@ public class MatchEngine {
 		generalService.writeMatchData(content);
 	}
 
-	public void displayScore() {
+	protected void displayScore() {
 
 		content = "score: " + score_batting + "/" + wickets_batting + "(" + (overIndex - 1) + "." + ballIndex + ")";
 		generalService.writeMatchData(content);
 	}
 
-	public void displayDelivery() {
+	protected void displayDelivery() {
 
 		content = bowler.getLastName() + " to " + onstrike.getLastName();
 		generalService.writeMatchData(content);
 	}
 
-	public void displayResultPerBall() {
+	protected void displayResultPerBall() {
 
 		content = resultPerBall + " runs, " + generalService.getCommentry(resultPerBall);
 		generalService.writeMatchData(content);
 	}
 
-	public void displayOpeners(Team batting_team) {
+	protected void displayOpeners(Team batting_team) {
 
 		content = batting_team.getName() + " openers " + onstrike.getName() + " and " + non_strike.getName()
 				+ " are in the middle";
 		generalService.writeMatchData(content);
 	}
 
-	public void setSuperOverFactors(MatchFactors matchFactors) {
+	protected void setSuperOverFactors(MatchFactors matchFactors) {
 
 		matchFactors.setSuper_over_factor(true);
 	}
 
-	public void startPowerplay(MatchFactors matchFactors) {
+	protected void startPowerplay(MatchFactors matchFactors) {
 
 		matchFactors.setPowerplay_factor(true);
 		if (!isMatchTied) {
-			content = "Powerplay restrictions for first " + (max_overs / 3) + " overs.";
+			content = "Powerplay restrictions for overs " + current_powerplay.getStart() + "-"
+					+ current_powerplay.getEnd();
 			generalService.writeMatchData(content);
 		}
 	}
 
-	public void endPowerplay(MatchFactors matchFactors) {
+	protected boolean isStartofPowerplay() {
+
+		Iterator<Range> itr = game.getPowerplays().iterator();
+		while (itr.hasNext()) {
+			Range range = itr.next();
+			if (range.getStart() == overIndex) {
+				current_powerplay = range;
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	protected boolean isEndofPowerplay() {
+
+		Iterator<Range> itr = game.getPowerplays().iterator();
+		while (itr.hasNext()) {
+			Range range = itr.next();
+			if (range.getEnd() == overIndex - 1) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	protected void endPowerplay(MatchFactors matchFactors) {
 
 		matchFactors.setPowerplay_factor(false);
 		if (!isMatchTied) {
@@ -462,19 +514,19 @@ public class MatchEngine {
 		}
 	}
 
-	public void setDeathOverFactors(MatchFactors matchFactors) {
+	protected void setDeathOverFactors(MatchFactors matchFactors) {
 
 		matchFactors.setDeath_overs_factor(true);
 	}
 
-	public void displayBowler(Player[] bowling_lineup) {
+	protected void displayBowler(Player[] bowling_lineup) {
 
-		bowler = bowling_lineup[overIndex-1];
+		bowler = bowling_lineup[overIndex - 1];
 		content = bowler.getName() + " comes into the action";
 		generalService.writeMatchData(content);
 	}
 
-	public void setFreehitFactors(MatchFactors matchFactors) {
+	protected void setFreehitFactors(MatchFactors matchFactors) {
 
 		if (match.isFreehit()) {
 			content = CommentryConstants.FREEHIT;
@@ -485,7 +537,7 @@ public class MatchEngine {
 		}
 	}
 
-	public void continueFreehitFactors(MatchFactors matchFactors) {
+	protected void continueFreehitFactors(MatchFactors matchFactors) {
 
 		if ((CommentryConstants.NO).equals(extra.getTypeOfextra())
 				|| ((CommentryConstants.WIDE).equals(extra.getTypeOfextra()) && matchFactors.isFreehit_factor())) {
@@ -493,7 +545,7 @@ public class MatchEngine {
 		}
 	}
 
-	public void displayExtraResult(MatchFactors matchFactors) {
+	protected void displayExtraResult(MatchFactors matchFactors) {
 
 		extra = scoreEngine.getTypeOfExtra(onstrike, bowler, matchFactors, score_batting, wickets_batting,
 				partnerships);
@@ -502,20 +554,20 @@ public class MatchEngine {
 		generalService.writeMatchData(content);
 	}
 
-	public void displayTypeOfWicket() {
+	protected void displayTypeOfWicket() {
 
 		content = scoreEngine.getTypeOfWicket(onstrike, bowler, bowling_team);
 		generalService.writeMatchData(content);
 	}
 
-	public void updateRequired() {
+	protected void updateRequired() {
 
 		if (batting_team.getName().equals(match.getBowling_team().getName())) {
 			required = match.getBatting_team().getScore() - score_batting;
 		}
 	}
 
-	public boolean isChaseComplete() {
+	protected boolean isChaseComplete() {
 
 		if (batting_team.getName().equals(match.getBowling_team().getName()) && required < 0) {
 			batting_team.setScore(score_batting);
@@ -525,7 +577,7 @@ public class MatchEngine {
 		return false;
 	}
 
-	public void displayEndOfOver(MatchFactors matchFactors) {
+	protected void displayEndOfOver(MatchFactors matchFactors) {
 
 		if (batting_team.getName().equals(match.getBowling_team().getName()) && overIndex != max_overs) {
 			content = "End of over " + overIndex + "(RR:" + scoreEngine.getRunrate(score_batting, overIndex) + ") RRR:"
@@ -540,25 +592,25 @@ public class MatchEngine {
 		}
 	}
 
-	public void setRequiredRunrateFactors(MatchFactors matchFactors) {
+	protected void setRequiredRunrateFactors(MatchFactors matchFactors) {
 
 		if (scoreEngine.getRunrate(match.getBatting_team().getScore() + 1 - score_batting,
-				max_overs - overIndex) >= 10) {
+				max_overs - overIndex) >= game.getRequiredRunrateThreshold()) {
 			matchFactors.setRequired_runrate_factor(true);
 		} else {
 			matchFactors.setRequired_runrate_factor(false);
 		}
 	}
 
-	public void setBalanceFactors(MatchFactors matchFactors) {
+	protected void setBalanceFactors(MatchFactors matchFactors) {
 
-		if (batting_team.getName().equals(match.getBatting_team().getName()) && overIndex > 14
-				&& scoreEngine.getRunrate(score_batting, overIndex) < 6) {
+		if (batting_team.getName().equals(match.getBatting_team().getName()) && overIndex > game.getBalacedOverThreshold()
+				&& scoreEngine.getRunrate(score_batting, overIndex) < game.getBalancedRunrateThreshold()) {
 			matchFactors.setBalance_factor(true);
 		}
 	}
 
-	public void displayBatsmanScore() {
+	protected void displayBatsmanScore() {
 
 		content = onstrike.getName() + " " + onstrike.getMatchPlayer().getRuns_scored() + "("
 				+ onstrike.getMatchPlayer().getBalls_faced() + ")\t" + non_strike.getName() + " "
@@ -567,7 +619,7 @@ public class MatchEngine {
 		generalService.writeMatchData(content);
 	}
 
-	public void displayBowlerScore() {
+	protected void displayBowlerScore() {
 
 		content = bowler.getName() + " " + bowler.getMatchPlayer().getBalls_bowled() / 6 + "-"
 				+ bowler.getMatchPlayer().getMaiden_overs() + "-" + bowler.getMatchPlayer().getRuns_given() + "-"
@@ -575,13 +627,13 @@ public class MatchEngine {
 		generalService.writeMatchData(content);
 	}
 
-	public void setPitchFactors() {
+	protected void setPitchFactors() {
 
 		boolean pitch_factor = matchService.isPitchFactor(bowler.getBowling_type(), match.getPitch_type());
 		matchFactors.setPitch_factor(pitch_factor);
 	}
 
-	public void getBattingScorecard(Team team) {
+	protected void getBattingScorecard(Team team) {
 
 		content = team.getName() + " " + team.getScore() + "/" + team.getWickets();
 		generalService.writeMatchData(content);
@@ -601,7 +653,7 @@ public class MatchEngine {
 				});
 	}
 
-	public void getBowlingScorecard(Team team) {
+	protected void getBowlingScorecard(Team team) {
 
 		content = team.getName() + " bowling";
 		generalService.writeMatchData(content);
@@ -614,7 +666,7 @@ public class MatchEngine {
 		});
 	}
 
-	public void getResult(Match match) {
+	protected void getResult(Match match) {
 
 		if (match.getBatting_team().getScore() > match.getBowling_team().getScore()) {
 			isMatchTied = false;
@@ -633,7 +685,7 @@ public class MatchEngine {
 		}
 	}
 
-	public void getManOfTheMatch(Match match) {
+	protected void getManOfTheMatch(Match match) {
 
 		if (match.getMan_of_the_match() == null) {
 			Player mom;
@@ -644,20 +696,20 @@ public class MatchEngine {
 		}
 	}
 
-	public void displayManOfTheMatch(Match match) {
+	protected void displayManOfTheMatch(Match match) {
 
 		content = "Man of the match is " + match.getMan_of_the_match().getName();
 		generalService.writeMatchData(content);
 	}
 
-	public Player getBestPerformer(Team team) {
+	protected Player getBestPerformer(Team team) {
 
 		max = team.getPlayers().get(0);
 		team.getPlayers().forEach(player -> max = getPerformance(player) > getPerformance(max) ? player : max);
 		return max;
 	}
 
-	public int getPerformance(Player player) {
+	protected int getPerformance(Player player) {
 
 		int performance = 0;
 		performance = player.getMatchPlayer().getRuns_scored() + 22 * player.getMatchPlayer().getWickets_taken();

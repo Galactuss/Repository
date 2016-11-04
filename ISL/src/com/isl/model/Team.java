@@ -1,15 +1,23 @@
 package com.isl.model;
 
 import java.util.List;
+
 public class Team {
-	
+
 	private String name;
 	private List<Player> players;
 	private Player[] bowling_lineup;
 	private int score = 0;
 	private int wickets;
-	
-	
+	private Player wicket_keeper;
+
+	public Player getWicket_keeper() {
+		return wicket_keeper;
+	}
+
+	public void setWicket_keeper(Player wicket_keeper) {
+		this.wicket_keeper = wicket_keeper;
+	}
 
 	public Player[] getBowling_lineup() {
 		return bowling_lineup;
@@ -22,15 +30,15 @@ public class Team {
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public List<Player> getPlayers() {
 		return players;
 	}
-	
+
 	public void setPlayers(List<Player> players) {
 		this.players = players;
 	}
