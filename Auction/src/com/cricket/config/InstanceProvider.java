@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.cricket.model.InstanceModel;
+
 /**
  * 
  * @author PUSHPAK
@@ -11,7 +13,7 @@ import java.util.Map;
  */
 public class InstanceProvider {
 	
-	static Map<Class<?>, Object> instances = null;
+	static Map<InstanceModel, Object> instances = null;
 	
 	/**
 	 * Private constructor
@@ -32,13 +34,14 @@ public class InstanceProvider {
 	public static <T> T getInstance(Class<T> clazz, Object... args) {
 
 		T instance = null;
-		Map<Class<?>, Object> instanceMap = InstanceProvider.instances;
+		InstanceModel instanceModel = new InstanceModel(clazz, args);
+		Map<InstanceModel, Object> instanceMap = InstanceProvider.instances;
 		if (instanceMap != null) {
-			if (instanceMap.containsKey(clazz)) {
-				return (T) instanceMap.get(clazz);
+			if (instanceMap.containsKey(instanceModel)) {
+				return (T) instanceMap.get(instanceModel);
 			}
 		} else {
-			InstanceProvider.instances = new HashMap<Class<?>, Object>();
+			InstanceProvider.instances = new HashMap<InstanceModel, Object>();
 			instanceMap = InstanceProvider.instances;
 		}
 		try {
@@ -48,7 +51,7 @@ public class InstanceProvider {
 				argClasses[index++] = arg.getClass();
 			}
 			instance = clazz.getDeclaredConstructor(argClasses).newInstance(args);
-			instanceMap.put(clazz, instance);
+			instanceMap.put(instanceModel, instance);
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
