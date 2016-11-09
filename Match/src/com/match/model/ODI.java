@@ -2,9 +2,12 @@ package com.match.model;
 
 import java.util.ArrayList;
 
+import com.isl.model.GameType;
+
 public class ODI extends Game {
 	
 	{
+		gameType = GameType.ODI;
 		max_overs = 50;
 		baseFactors = new Factors(10100, 12500, 5000, 300, 1500, 700, 300, 400);
 		balanceFactors = new Factors(-1200, 200, 0, 100, 500, 0, 200, 100);

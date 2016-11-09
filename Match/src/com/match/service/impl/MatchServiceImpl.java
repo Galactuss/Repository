@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import com.isl.comparators.BowlingSkillsComparator;
 import com.isl.comparators.BowlingTypeComparator;
+import com.isl.model.GameType;
 import com.isl.model.MatchPlayer;
 import com.isl.model.Player;
 import com.isl.model.Team;
@@ -16,6 +17,7 @@ import com.isl.service.PlayerDao;
 import com.isl.service.TeamDao;
 import com.cricket.config.InstanceProvider;
 import com.match.data.MatchConstants;
+import com.match.model.Game;
 import com.match.model.Match;
 import com.match.service.MatchFactors;
 import com.match.service.MatchService;
@@ -30,8 +32,8 @@ import com.match.util.RandomUtil.RandomGenerator;
  */
 public class MatchServiceImpl implements MatchService {
 
-	private PlayerDao playerDao = InstanceProvider.getInstance(PlayerDao.class);
-	private TeamDao teamDao = InstanceProvider.getInstance(TeamDao.class);
+	private static PlayerDao playerDao;
+	private static TeamDao teamDao;
 	private boolean stopExecution = false;
 	private static final String ROLE = "role";
 	private static final String BATTING_SKILLS = "batting_skills";
@@ -46,6 +48,10 @@ public class MatchServiceImpl implements MatchService {
 	private static int counter = 0;
 	private static final long MAX_COUNTER_VALUE = 100000000;
 
+	public MatchServiceImpl(GameType gameType) {
+		playerDao = InstanceProvider.getInstance(PlayerDao.class);
+		teamDao = InstanceProvider.getInstance(TeamDao.class, gameType);
+	}
 	/**
 	 * Initializes invalid result map
 	 */
@@ -64,6 +70,7 @@ public class MatchServiceImpl implements MatchService {
 		invalidExtraResults.put(2, 2);
 		invalidExtraResults.put(2, 3);
 		MatchServiceImpl.invalidExtraResults = invalidExtraResults;
+		
 	}
 
 	/**
@@ -155,13 +162,13 @@ public class MatchServiceImpl implements MatchService {
 	 * @see com.match.service.MatchServicee#setBowlingLineup(com.isl.model.Team, int)
 	 */
 	@Override
-	public void setBowlingLineup(Team team, int max_overs) {
+	public void setBowlingLineup(Team team, Game game) {
 
 		Collections.sort(team.getPlayers(), new BowlingSkillsComparator());
 		List<Player> players = team.getPlayers().stream().filter(player -> team.getPlayers().indexOf(player) < 5)
 				.collect(Collectors.toList());
 		Collections.sort(players, new BowlingTypeComparator());
-		setBowlingLineup(new int[max_overs], players, 0, new int[5], 0, 0, team);
+		setBowlingLineup(new int[game.getMax_overs()], players, 0, new int[5], 0, 0, team);
 		stopExecution = false;
 	}
 

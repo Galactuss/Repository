@@ -2,8 +2,11 @@ package com.match.model;
 
 import java.util.List;
 
+import com.isl.model.GameType;
+
 public class Game {
 
+	protected GameType gameType;
 	protected int max_overs;
 	protected Factors baseFactors;
 	protected Factors balanceFactors;
@@ -22,6 +25,10 @@ public class Game {
 	protected int deathOverThreshold;
 	protected int balacedOverThreshold;
 	protected int balancedRunrateThreshold;
+
+	public GameType getGameType() {
+		return gameType;
+	}
 
 	public int getBalacedOverThreshold() {
 		return balacedOverThreshold;

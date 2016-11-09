@@ -20,7 +20,7 @@ import com.match.util.ListUtil;
 import com.match.util.MatchUtil;
 import com.match.model.Extra;
 import com.match.model.Game;
-import com.match.model.GameType;
+import com.isl.model.GameType;
 import com.match.model.Match;
 import com.match.model.ODI;
 import com.match.model.Range;
@@ -73,7 +73,7 @@ public class MatchEngine {
 		}
 		ScoreEngineImpl.game = game;
 		generalService = InstanceProvider.getInstance(GeneralServiceImpl.class);
-		matchService = InstanceProvider.getInstance(MatchServiceImpl.class);
+		matchService = InstanceProvider.getInstance(MatchServiceImpl.class, game.getGameType());
 		rainInterruptionReducedOvers = generalService.checkForRainInteruption();
 		if (!isMatchTied) {
 			match = runPreMatchEngine(team1, team2);
@@ -139,7 +139,7 @@ public class MatchEngine {
 		displayTarget(batting_team);
 		overIndex = 1;
 		setMaximumOvers(matchFactors);
-		matchService.setBowlingLineup(bowlingTeam, max_overs);
+		matchService.setBowlingLineup(bowlingTeam, game);
 		Player[] bowling_lineup = bowling_team.getBowling_lineup();
 		displayOpeners(batting_team);
 		generalService.addTimeLag(2);

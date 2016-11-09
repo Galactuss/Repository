@@ -10,7 +10,7 @@ import com.isl.model.Player;
 import com.isl.model.Team;
 import com.isl.service.TeamCreator;
 import com.cricket.config.InstanceProvider;
-import com.match.model.GameType;
+import com.isl.model.GameType;
 import com.match.service.MatchEngine;
 import com.match.service.impl.MatchServiceImpl;
 import com.match.service.TeamSelector;
@@ -35,7 +35,6 @@ public class MatchEngineRunner {
 		boolean validIndex = false;
 		boolean runAuction = false;
 		boolean isError = false;
-		matchService = InstanceProvider.getInstance(MatchServiceImpl.class);
 		Scanner scanner = new Scanner(System.in);
 		while (!runAuction) {
 			System.out.println("Do you want to run auction?(yes/no)");
@@ -82,6 +81,7 @@ public class MatchEngineRunner {
 			gameType = GameType.T20I;
 		}
 		scanner.close();
+		matchService = InstanceProvider.getInstance(MatchServiceImpl.class, gameType);
 		TeamCreator teamCreator = new TeamCreator();
 		TeamSelector teamSelector = new TeamSelectorImpl();
 		List<Team> teams = new ArrayList<Team>();

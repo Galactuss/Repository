@@ -2,6 +2,7 @@ package com.match.service;
 
 import com.isl.model.MatchPlayer;
 import com.isl.model.Team;
+import com.match.model.Game;
 import com.match.model.Match;
 
 public interface MatchService {
@@ -61,7 +62,7 @@ public interface MatchService {
 	 * @param team
 	 * @param max_overs
 	 */
-	void setBowlingLineup(Team team, int max_overs);
+	void setBowlingLineup(Team team, Game game);
 
 	/**
 	 * Updates statistical records for match {@link Match}

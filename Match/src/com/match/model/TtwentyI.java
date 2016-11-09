@@ -2,9 +2,12 @@ package com.match.model;
 
 import java.util.ArrayList;
 
+import com.isl.model.GameType;
+
 public class TtwentyI extends Game {
 		
 	{
+		gameType = GameType.T20I;
 		max_overs = 20;
 		baseFactors = new Factors(3500, 4500, 2500, 200, 800, 500, 200, 300);
 		balanceFactors = new Factors(-1200, 200, 0, 100, 500, 0, 200, 100);
