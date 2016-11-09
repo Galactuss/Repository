@@ -9,11 +9,13 @@ import com.cricket.data.AuctionConstants;
 import com.isl.model.Player;
 import com.isl.model.Team;
 import com.isl.service.TeamCreator;
-import com.match.config.InstanceProvider;
+import com.cricket.config.InstanceProvider;
 import com.match.model.GameType;
 import com.match.service.MatchEngine;
-import com.match.service.MatchService;
+import com.match.service.impl.MatchServiceImpl;
 import com.match.service.TeamSelector;
+import com.match.service.MatchService;
+import com.match.service.impl.TeamSelectorImpl;
 
 /**
  * 
@@ -33,7 +35,7 @@ public class MatchEngineRunner {
 		boolean validIndex = false;
 		boolean runAuction = false;
 		boolean isError = false;
-		matchService = InstanceProvider.getInstance(MatchService.class);
+		matchService = InstanceProvider.getInstance(MatchServiceImpl.class);
 		Scanner scanner = new Scanner(System.in);
 		while (!runAuction) {
 			System.out.println("Do you want to run auction?(yes/no)");
@@ -81,7 +83,7 @@ public class MatchEngineRunner {
 		}
 		scanner.close();
 		TeamCreator teamCreator = new TeamCreator();
-		TeamSelector teamSelector = new TeamSelector();
+		TeamSelector teamSelector = new TeamSelectorImpl();
 		List<Team> teams = new ArrayList<Team>();
 		String[] teamList = { AuctionConstants.TEAM_NAMES[teamIndexOne - 1],
 				AuctionConstants.TEAM_NAMES[teamIndexTwo - 1] };

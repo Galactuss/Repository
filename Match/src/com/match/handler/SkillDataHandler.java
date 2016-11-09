@@ -1,13 +1,14 @@
 package com.match.handler;
 
 import com.isl.model.Player;
-import com.match.config.InstanceProvider;
+import com.cricket.config.InstanceProvider;
 import com.match.model.Game;
 import com.match.service.GeneralService;
+import com.match.service.impl.GeneralServiceImpl;
 
 public class SkillDataHandler {
 
-	private static GeneralService generalService = InstanceProvider.getInstance(GeneralService.class);
+	private static GeneralService generalService = InstanceProvider.getInstance(GeneralServiceImpl.class);
 
 	public static int dotChance(Player batsman, Player bowler, Game game) {
 

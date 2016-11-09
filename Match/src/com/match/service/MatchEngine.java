@@ -9,10 +9,13 @@ import java.util.Random;
 import com.isl.comparators.BattingSkillsComparator;
 import com.isl.model.Player;
 import com.isl.model.Team;
-import com.match.config.InstanceProvider;
+import com.cricket.config.InstanceProvider;
 import com.match.data.CommentryConstants;
 import com.match.data.MatchConstants;
 import com.match.service.MatchFactors;
+import com.match.service.impl.GeneralServiceImpl;
+import com.match.service.impl.MatchServiceImpl;
+import com.match.service.impl.ScoreEngine;
 import com.match.util.ListUtil;
 import com.match.util.MatchUtil;
 import com.match.model.Extra;
@@ -68,9 +71,9 @@ public class MatchEngine {
 		} else {
 			game = InstanceProvider.getInstance(TtwentyI.class);
 		}
-		ScoreEngine.game = game;
-		generalService = InstanceProvider.getInstance(GeneralService.class);
-		matchService = InstanceProvider.getInstance(MatchService.class);
+		ScoreEngineImpl.game = game;
+		generalService = InstanceProvider.getInstance(GeneralServiceImpl.class);
+		matchService = InstanceProvider.getInstance(MatchServiceImpl.class);
 		rainInterruptionReducedOvers = generalService.checkForRainInteruption();
 		if (!isMatchTied) {
 			match = runPreMatchEngine(team1, team2);
@@ -121,7 +124,7 @@ public class MatchEngine {
 		bowling_team = bowlingTeam;
 		partnerships = new LinkedList<Integer>();
 		partnerships.add(null);
-		scoreEngine = InstanceProvider.getInstance(ScoreEngine.class);
+		scoreEngine = InstanceProvider.getInstance(ScoreEngineImpl.class);
 		if (match.getMatchFactors() == null) {
 			matchFactors = InstanceProvider.getInstance(MatchFactors.class);
 			match.setMatchFactors(matchFactors);
@@ -130,7 +133,7 @@ public class MatchEngine {
 		}
 		Collections.sort(batting_team.getPlayers(), new BattingSkillsComparator());
 		setWicketKeeper();
-		ListUtil.shufflePartialList(batting_team.getPlayers(), 3, 6);
+		ListUtil.shufflePartialList(batting_team.getPlayers(), 4, 6);
 		getOpeners();
 		index = 1;
 		displayTarget(batting_team);
@@ -356,7 +359,7 @@ public class MatchEngine {
 			max_overs = 1;
 		} else {
 			max_overs = game.getMax_overs();
-			ScoreEngine.max = max_overs * 600;
+			ScoreEngineImpl.max = max_overs * 600;
 		}
 	}
 

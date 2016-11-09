@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import com.match.config.InstanceProvider;
+import com.cricket.config.InstanceProvider;
 
 /**
  * 
@@ -19,6 +19,16 @@ public class RandomUtil {
 	 */
 	private RandomUtil() {
 
+	}
+	
+	/**
+	 * Return random number given the bound
+	 * @param bound
+	 * @return
+	 */
+	public static int generateRandom(int bound) {
+		Random random = InstanceProvider.getInstance(Random.class);
+		return random.nextInt(bound);
 	}
 	
 	/**
