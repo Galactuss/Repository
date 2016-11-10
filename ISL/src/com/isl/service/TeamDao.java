@@ -8,6 +8,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import com.cricket.config.InstanceProvider;
 import com.isl.data.TableConstants;
+import com.isl.model.GameType;
 
 /**
  * 
@@ -21,8 +22,8 @@ public class TeamDao extends ExcelDaoImpl {
 	/**
 	 * Constructor for TeamDao
 	 */
-	public TeamDao() {
-		fileName = TableConstants.LINEUP_FILE;
+	public TeamDao(GameType gameType) {
+		fileName = TableConstants.LINEUP_FILE + gameType.toString() + TableConstants.EXCEL_FILE_EXTENTION;
 	}
 
 	/**

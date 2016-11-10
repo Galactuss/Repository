@@ -1,36 +1,20 @@
 package com.isl.service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Iterator;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.isl.data.TableConstants;
 
-public class PlayerDao {
+public class PlayerDao extends ExcelDaoImpl {
 
-	public XSSFSheet getSheet() {
-
-		FileInputStream file = null;
-		XSSFWorkbook workbook = null;
-		try {
-			file = new FileInputStream(new File(TableConstants.DATA_FILE));
-			workbook = new XSSFWorkbook(file);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		XSSFSheet sheet = workbook.getSheetAt(0);
-		return sheet;
+	/**
+	 * Constructor for PlayerDao
+	 */
+	public PlayerDao() {
+		fileName = TableConstants.DATA_FILE;
 	}
 
 	public String getRole(String name) {
@@ -227,16 +211,4 @@ public class PlayerDao {
 		writeWorkbook(sheet);
 	}
 
-	public void writeWorkbook(XSSFSheet sheet) {
-
-		FileOutputStream out;
-		try {
-			out = new FileOutputStream(TableConstants.DATA_FILE);
-			sheet.getWorkbook().write(out);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 }
