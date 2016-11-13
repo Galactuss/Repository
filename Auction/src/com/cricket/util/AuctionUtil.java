@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.cricket.config.InstanceProvider;
+
 /**
  * 
- * @author Pushpak
+ * @author PUSHPAK
  *
  */
 public class AuctionUtil {
 	
-	private static Random randomGenerator = new Random();
+	private static Random randomGenerator = InstanceProvider.getInstance(Random.class);
 	
 	/**
 	 * Picks a certain number of players from the given list randomly
@@ -22,7 +24,7 @@ public class AuctionUtil {
 	public static List<String> pickPlayers(List<String> list, int count) {
 		
 		List<String> playersList = new ArrayList<String>();
-		for(int i=0; i<count; i++) {
+		A.forEach(count, i -> {
 			int size = list.size() - 1;
 			int index = randomGenerator.nextInt(size);
 			playersList.add(list.get(index));
@@ -32,7 +34,7 @@ public class AuctionUtil {
 			} catch(InterruptedException ex) {
 			    Thread.currentThread().interrupt();
 			}*/
-		}
+		});
 		return playersList;
 	}
 }

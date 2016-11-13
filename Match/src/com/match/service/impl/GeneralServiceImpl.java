@@ -117,6 +117,22 @@ public class GeneralServiceImpl implements GeneralService {
 			e.printStackTrace();
 		}
 	}
+	
+	/* (non-Javadoc)
+	 * @see com.match.service.GeneralService#writeMatchData(java.lang.String)
+	 */
+	@Override
+	public void writeMatchData(StringBuilder contentsb) {
+
+		BufferedWriter writer = MatchEngine.writer;
+		try {
+			writer.write(contentsb.toString());
+			writer.newLine();
+			System.out.println(contentsb);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see com.match.service.GeneralService#closeWriter(java.io.BufferedWriter)

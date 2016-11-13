@@ -1,6 +1,6 @@
 package com.match.service;
 
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 import com.isl.model.Player;
@@ -11,8 +11,10 @@ import com.match.data.MatchConstants;
 import com.match.service.MatchFactors;
 import com.match.service.impl.GeneralServiceImpl;
 import com.match.service.impl.ScoreEngine;
+import com.match.util.MatchUtil;
 import com.match.model.Extra;
 import com.match.model.Game;
+import com.isl.model.Partnership;
 
 /**
  * 
@@ -27,11 +29,11 @@ public class ScoreEngineImpl implements ScoreEngine {
 	private GeneralService generalService = (GeneralService) InstanceProvider.getInstance(GeneralServiceImpl.class);
 
 	/* (non-Javadoc)
-	 * @see com.match.service.ScoreEngine#getResultForDelievery(com.isl.model.Player, com.isl.model.Player, com.match.service.MatchFactors, int, int, java.util.LinkedList)
+	 * @see com.match.service.ScoreEngine#getResultForDelievery(com.isl.model.Player, com.isl.model.Player, com.match.service.MatchFactors, int, int, java.util.List)
 	 */
 	@Override
 	public int getResultForDelievery(Player batsman, Player bowler, MatchFactors matchFactors, int score, int wickets,
-			LinkedList<Integer> partnerships) {
+			List<Partnership> partnerships) {
 
 		int result = randomGenerator.nextInt(8);
 		if (result == 0 && dotChance(matchFactors, batsman, bowler, partnerships)) {
@@ -56,11 +58,11 @@ public class ScoreEngineImpl implements ScoreEngine {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.match.service.ScoreEngine#dotChance(com.match.service.MatchFactors, com.isl.model.Player, com.isl.model.Player, java.util.LinkedList)
+	 * @see com.match.service.ScoreEngine#dotChance(com.match.service.MatchFactors, com.isl.model.Player, com.isl.model.Player, java.util.List)
 	 */
 	@Override
 	public boolean dotChance(MatchFactors matchFactors, Player batsman, Player bowler,
-			LinkedList<Integer> partnerships) {
+			List<Partnership> partnerships) {
 
 		int external = matchFactors.getDotFactors(batsman, bowler, partnerships, game);
 		int dotChance = randomGenerator.nextInt(12000);
@@ -71,11 +73,11 @@ public class ScoreEngineImpl implements ScoreEngine {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.match.service.ScoreEngine#singleChance(com.match.service.MatchFactors, com.isl.model.Player, com.isl.model.Player, java.util.LinkedList)
+	 * @see com.match.service.ScoreEngine#singleChance(com.match.service.MatchFactors, com.isl.model.Player, com.isl.model.Player, java.util.List)
 	 */
 	@Override
 	public boolean singleChance(MatchFactors matchFactors, Player batsman, Player bowler,
-			LinkedList<Integer> partnerships) {
+			List<Partnership> partnerships) {
 
 		int external = matchFactors.getSingleFactors(batsman, bowler, partnerships, game);
 		int singleChance = randomGenerator.nextInt(12000);
@@ -86,11 +88,11 @@ public class ScoreEngineImpl implements ScoreEngine {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.match.service.ScoreEngine#doubleChance(com.match.service.MatchFactors, com.isl.model.Player, com.isl.model.Player, java.util.LinkedList)
+	 * @see com.match.service.ScoreEngine#doubleChance(com.match.service.MatchFactors, com.isl.model.Player, com.isl.model.Player, java.util.List)
 	 */
 	@Override
 	public boolean doubleChance(MatchFactors matchFactors, Player batsman, Player bowler,
-			LinkedList<Integer> partnerships) {
+			List<Partnership> partnerships) {
 
 		int external = matchFactors.getDoubleFactors(batsman, bowler, partnerships, game);
 		int doubleChance = randomGenerator.nextInt(12000);
@@ -101,11 +103,11 @@ public class ScoreEngineImpl implements ScoreEngine {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.match.service.ScoreEngine#tripleChance(com.match.service.MatchFactors, com.isl.model.Player, com.isl.model.Player, java.util.LinkedList)
+	 * @see com.match.service.ScoreEngine#tripleChance(com.match.service.MatchFactors, com.isl.model.Player, com.isl.model.Player, java.util.List)
 	 */
 	@Override
 	public boolean tripleChance(MatchFactors matchFactors, Player batsman, Player bowler,
-			LinkedList<Integer> partnerships) {
+			List<Partnership> partnerships) {
 
 		int external = matchFactors.getTripleFactors(batsman, bowler, partnerships, game);
 		int tripleChance = randomGenerator.nextInt(12000);
@@ -116,11 +118,11 @@ public class ScoreEngineImpl implements ScoreEngine {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.match.service.ScoreEngine#fourChance(com.match.service.MatchFactors, com.isl.model.Player, com.isl.model.Player, java.util.LinkedList)
+	 * @see com.match.service.ScoreEngine#fourChance(com.match.service.MatchFactors, com.isl.model.Player, com.isl.model.Player, java.util.List)
 	 */
 	@Override
 	public boolean fourChance(MatchFactors matchFactors, Player batsman, Player bowler,
-			LinkedList<Integer> partnerships) {
+			List<Partnership> partnerships) {
 
 		int external = matchFactors.getFourFactors(batsman, bowler, partnerships, game);
 		int fourChance = randomGenerator.nextInt(12000);
@@ -144,11 +146,11 @@ public class ScoreEngineImpl implements ScoreEngine {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.match.service.ScoreEngine#sixChance(com.match.service.MatchFactors, com.isl.model.Player, com.isl.model.Player, java.util.LinkedList)
+	 * @see com.match.service.ScoreEngine#sixChance(com.match.service.MatchFactors, com.isl.model.Player, com.isl.model.Player, java.util.List)
 	 */
 	@Override
 	public boolean sixChance(MatchFactors matchFactors, Player batsman, Player bowler,
-			LinkedList<Integer> partnerships) {
+			List<Partnership> partnerships) {
 
 		int external = matchFactors.getSixFactors(batsman, bowler, partnerships, game);
 		int sixChance = randomGenerator.nextInt(12000);
@@ -159,11 +161,11 @@ public class ScoreEngineImpl implements ScoreEngine {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.match.service.ScoreEngine#wicketChance(com.match.service.MatchFactors, com.isl.model.Player, com.isl.model.Player, int, int, java.util.LinkedList)
+	 * @see com.match.service.ScoreEngine#wicketChance(com.match.service.MatchFactors, com.isl.model.Player, com.isl.model.Player, int, int, java.util.List)
 	 */
 	@Override
 	public boolean wicketChance(MatchFactors matchFactors, Player batsman, Player bowler, int score, int wickets,
-			LinkedList<Integer> partnerships) {
+			List<Partnership> partnerships) {
 
 		int external = matchFactors.getWicketFactors(batsman, bowler, partnerships, game);
 		int wicketChance = randomGenerator.nextInt(12000);
@@ -175,11 +177,11 @@ public class ScoreEngineImpl implements ScoreEngine {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.match.service.ScoreEngine#getTypeOfExtra(com.isl.model.Player, com.isl.model.Player, com.match.service.MatchFactors, int, int, java.util.LinkedList)
+	 * @see com.match.service.ScoreEngine#getTypeOfExtra(com.isl.model.Player, com.isl.model.Player, com.match.service.MatchFactors, int, int, java.util.List)
 	 */
 	@Override
 	public Extra getTypeOfExtra(Player batsman, Player bowler, MatchFactors matchFactors, int score, int wickets,
-			LinkedList<Integer> partnerships) {
+			List<Partnership> partnerships) {
 
 		Extra extra = new Extra();
 		int typeOfExtraChance = randomGenerator.nextInt(3);
@@ -238,11 +240,11 @@ public class ScoreEngineImpl implements ScoreEngine {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.match.service.ScoreEngine#getNoballRuns(com.isl.model.Player, com.isl.model.Player, com.match.service.MatchFactors, int, int, java.util.LinkedList)
+	 * @see com.match.service.ScoreEngine#getNoballRuns(com.isl.model.Player, com.isl.model.Player, com.match.service.MatchFactors, int, int, java.util.List)
 	 */
 	@Override
 	public int getNoballRuns(Player batsman, Player bowler, MatchFactors matchFactors, int score, int wickets,
-			LinkedList<Integer> partnerships) {
+			List<Partnership> partnerships) {
 
 		int runs = getResultForDelievery(batsman, bowler, matchFactors, score, wickets, partnerships);
 		return runs;
@@ -265,6 +267,7 @@ public class ScoreEngineImpl implements ScoreEngine {
 					+ "x4 " + batsman.getMatchPlayer().getSix_scored() + "x6)";
 		} else if (chance == 3) {
 			if ((MatchConstants.SPINNER).equals(bowler.getBowling_type())) {
+				MatchUtil.update(bowling_team.getWicket_keeper(), "catches_taken", 1);
 				return batsman.getName() + " st " + bowling_team.getWicket_keeper().getLastName() + " b "
 						+ bowler.getLastName() + " " + batsman.getMatchPlayer().getRuns_scored() + "("
 						+ batsman.getMatchPlayer().getBalls_faced() + "b " + batsman.getMatchPlayer().getFour_scored()
@@ -274,6 +277,7 @@ public class ScoreEngineImpl implements ScoreEngine {
 			}
 		} else {
 			Player catcher = getRandomPlayer(bowling_team);
+			MatchUtil.update(catcher, "catches_taken", 1);
 			if (catcher.getName().equals(bowler.getName())) {
 				return batsman.getName() + " c&b " + bowler.getLastName() + " " + batsman.getMatchPlayer().getRuns_scored()
 						+ "(" + batsman.getMatchPlayer().getBalls_faced() + "b "

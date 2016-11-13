@@ -16,6 +16,7 @@ import com.isl.model.Team;
 import com.isl.service.PlayerDao;
 import com.isl.service.TeamDao;
 import com.cricket.config.InstanceProvider;
+import com.cricket.util.A;
 import com.match.data.MatchConstants;
 import com.match.model.Game;
 import com.match.model.Match;
@@ -47,11 +48,13 @@ public class MatchServiceImpl implements MatchService {
 	private static int[] savedLineup;
 	private static int counter = 0;
 	private static final long MAX_COUNTER_VALUE = 100000000;
+	private int nextIndex;
 
 	public MatchServiceImpl(GameType gameType) {
 		playerDao = InstanceProvider.getInstance(PlayerDao.class);
 		teamDao = InstanceProvider.getInstance(TeamDao.class, gameType);
 	}
+
 	/**
 	 * Initializes invalid result map
 	 */
@@ -70,7 +73,7 @@ public class MatchServiceImpl implements MatchService {
 		invalidExtraResults.put(2, 2);
 		invalidExtraResults.put(2, 3);
 		MatchServiceImpl.invalidExtraResults = invalidExtraResults;
-		
+
 	}
 
 	/**
@@ -84,7 +87,9 @@ public class MatchServiceImpl implements MatchService {
 		MatchServiceImpl.pitchFactors = pitchFactors;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.match.service.MatchServicee#setRoles(com.isl.model.Team)
 	 */
 	@Override
@@ -93,7 +98,9 @@ public class MatchServiceImpl implements MatchService {
 		MatchUtil.set(team, ROLE, PlayerDao.class);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.match.service.MatchServicee#setBattingSkills(com.isl.model.Team)
 	 */
 	@Override
@@ -102,7 +109,9 @@ public class MatchServiceImpl implements MatchService {
 		MatchUtil.set(team, BATTING_SKILLS, PlayerDao.class);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.match.service.MatchServicee#setBowlingSkills(com.isl.model.Team)
 	 */
 	@Override
@@ -111,8 +120,12 @@ public class MatchServiceImpl implements MatchService {
 		MatchUtil.set(team, BOWLING_SKILLS, PlayerDao.class);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.match.service.MatchServicee#setWicketKeepingSkills(com.isl.model.Team)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.match.service.MatchServicee#setWicketKeepingSkills(com.isl.model.
+	 * Team)
 	 */
 	@Override
 	public void setWicketKeepingSkills(Team team) {
@@ -120,7 +133,9 @@ public class MatchServiceImpl implements MatchService {
 		MatchUtil.set(team, WICKETKEEPING_SKILLS, PlayerDao.class);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.match.service.MatchServicee#setBowlingTypes(com.isl.model.Team)
 	 */
 	@Override
@@ -129,7 +144,9 @@ public class MatchServiceImpl implements MatchService {
 		MatchUtil.set(team, BOWLING_TYPES, PlayerDao.class);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.match.service.MatchServicee#setMatchPlayers(com.isl.model.Team)
 	 */
 	@Override
@@ -138,7 +155,9 @@ public class MatchServiceImpl implements MatchService {
 		MatchUtil.set(team, MATCHPLAYER, MatchPlayer.class);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.match.service.MatchServicee#setWicketKeeper(com.isl.model.Team)
 	 */
 	@Override
@@ -158,8 +177,11 @@ public class MatchServiceImpl implements MatchService {
 		team.setWicket_keeper(wicketKeeper);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.match.service.MatchServicee#setBowlingLineup(com.isl.model.Team, int)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.match.service.MatchServicee#setBowlingLineup(com.isl.model.Team,
+	 * int)
 	 */
 	@Override
 	public void setBowlingLineup(Team team, Game game) {
@@ -173,7 +195,7 @@ public class MatchServiceImpl implements MatchService {
 	}
 
 	/**
-	 * Set bowling lineup recursively
+	 * Set bowling line-up recursively
 	 * 
 	 * @param players
 	 * @param playerList
@@ -245,18 +267,17 @@ public class MatchServiceImpl implements MatchService {
 	protected void checkOtherAlternatives(int[] players, List<Player> playerList, int index, int[] overs, int count,
 			int checked, Team team, RandomGenerator randomGenerator) {
 
-		int nextIndex = (index + randomGenerator.generateUniqueRandom()) % 5;
-		setBowlingLineup(players, playerList, nextIndex, overs, count, checked, team);
-		nextIndex = (index + randomGenerator.generateUniqueRandom()) % 5;
-		setBowlingLineup(players, playerList, nextIndex, overs, count, checked, team);
-		nextIndex = (index + randomGenerator.generateUniqueRandom()) % 5;
-		setBowlingLineup(players, playerList, nextIndex, overs, count, checked, team);
-		nextIndex = (index + randomGenerator.generateUniqueRandom()) % 5;
-		setBowlingLineup(players, playerList, nextIndex, overs, count, checked, team);
+		A.forEach(4, i -> {
+			nextIndex = (index + randomGenerator.generateUniqueRandom()) % 5;
+			setBowlingLineup(players, playerList, nextIndex, overs, count, checked, team);
+		});
 	}
 
-	/* (non-Javadoc)
-	 * @see com.match.service.MatchServicee#updateCareerRecords(com.match.model.Match)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.match.service.MatchServicee#updateCareerRecords(com.match.model.
+	 * Match)
 	 */
 	@Override
 	public void updateCareerRecords(Match match) {
@@ -268,22 +289,29 @@ public class MatchServiceImpl implements MatchService {
 		updateCareeeRecordsForTeam(team);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.match.service.MatchServicee#updateCareeeRecordsForTeam(com.isl.model.Team)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.match.service.MatchServicee#updateCareeeRecordsForTeam(com.isl.model.
+	 * Team)
 	 */
 	@Override
 	public void updateCareeeRecordsForTeam(Team team) {
 
-		for (Player player : team.getPlayers()) {
+		team.getPlayers().forEach(player -> {
 			playerDao.updateCareerRuns(player.getName(), player.getMatchPlayer().getRuns_scored());
 			playerDao.updateCareerWickets(player.getName(), player.getMatchPlayer().getWickets_taken());
 			playerDao.updateCareerMatches(player.getName());
 			playerDao.updateHighestScore(player.getName(), player.getMatchPlayer().getRuns_scored());
-		}
+		});
 	}
 
-	/* (non-Javadoc)
-	 * @see com.match.service.MatchServicee#refreshMatchPlayers(com.match.model.Match)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.match.service.MatchServicee#refreshMatchPlayers(com.match.model.
+	 * Match)
 	 */
 	@Override
 	public void refreshMatchPlayers(Match match) {
@@ -295,8 +323,11 @@ public class MatchServiceImpl implements MatchService {
 		refreshMatchPlayers(team);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.match.service.MatchServicee#refreshMatchPlayers(com.isl.model.Team)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.match.service.MatchServicee#refreshMatchPlayers(com.isl.model.Team)
 	 */
 	@Override
 	public void refreshMatchPlayers(Team team) {
@@ -308,28 +339,35 @@ public class MatchServiceImpl implements MatchService {
 		});
 	}
 
-	/* (non-Javadoc)
-	 * @see com.match.service.MatchServicee#resetMatchFactors(com.match.service.MatchFactors)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.match.service.MatchServicee#resetMatchFactors(com.match.service.
+	 * MatchFactors)
 	 */
 	@Override
 	public MatchFactors resetMatchFactors(MatchFactors matchFactors) {
 
 		Field[] fields = matchFactors.getClass().getDeclaredFields();
-		for (Field field : fields) {
+		A.forEach(fields, field -> {
 			try {
-				field.setAccessible(true);
-				field.setBoolean(matchFactors, false);
-				field.setAccessible(false);
+				if (!field.isAccessible()) {
+					field.setAccessible(true);
+					field.setBoolean(matchFactors, false);
+					field.setAccessible(false);
+				}
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			}
-		}
+		});
 		return matchFactors;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.match.service.MatchServicee#validateResult(int, int)
 	 */
 	@Override
@@ -343,8 +381,11 @@ public class MatchServiceImpl implements MatchService {
 		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.match.service.MatchServicee#isPitchFactor(java.lang.String, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.match.service.MatchServicee#isPitchFactor(java.lang.String,
+	 * java.lang.String)
 	 */
 	@Override
 	public boolean isPitchFactor(String bowling_type, String pitch_type) {

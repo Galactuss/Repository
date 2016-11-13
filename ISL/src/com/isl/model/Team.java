@@ -10,6 +10,7 @@ public class Team {
 	private int score = 0;
 	private int wickets;
 	private Player wicket_keeper;
+	private List<Partnership> partnerships;
 
 	public Player getWicket_keeper() {
 		return wicket_keeper;
@@ -58,4 +59,13 @@ public class Team {
 	public void setWickets(int wickets) {
 		this.wickets = wickets;
 	}
+
+	public List<Partnership> getPartnerships() {
+		return partnerships;
+	}
+
+	public void setPartnerships(List<Partnership> partnerships) {
+		this.partnerships = partnerships;
+	}
+	
 }

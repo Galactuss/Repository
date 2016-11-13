@@ -33,6 +33,13 @@ public interface GeneralService {
 	 * @param content
 	 */
 	void writeMatchData(String content);
+	
+	/**
+	 * Write data to files
+	 * 
+	 * @param contentsb
+	 */
+	void writeMatchData(StringBuilder contentsb);
 
 	/**
 	 * Close the bufferedwriter

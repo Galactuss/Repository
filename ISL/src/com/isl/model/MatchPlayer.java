@@ -10,6 +10,7 @@ public class MatchPlayer {
 	private int balls_bowled = 0;
 	private int wickets_taken = 0;
 	private int maiden_overs = 0;
+	private int catches_taken = 0;
 	private boolean half_century = false;
 	private boolean century = false;
 	private boolean isNotOut = false;
@@ -109,5 +110,13 @@ public class MatchPlayer {
 
 	public void setWickets_taken(int wickets_taken) {
 		this.wickets_taken = wickets_taken;
+	}
+
+	public int getCatches_taken() {
+		return catches_taken;
+	}
+
+	public void setCatches_taken(int catches_taken) {
+		this.catches_taken = catches_taken;
 	}
 }

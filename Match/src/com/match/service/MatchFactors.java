@@ -1,13 +1,12 @@
 package com.match.service;
 
-import java.util.LinkedList;
+import java.util.List;
 
 import com.isl.model.Player;
 import com.match.data.SuperOverFactors;
-import com.match.handler.PressureSituationHandler;
-import com.match.handler.SettledHandler;
 import com.match.handler.SkillDataHandler;
 import com.match.model.Game;
+import com.isl.model.Partnership;
 import com.match.model.ResultType;
 
 /**
@@ -25,7 +24,7 @@ public class MatchFactors {
 	private boolean reduced_overs_factor = false;
 	private boolean super_over_factor = false;
 	private boolean balance_factor = false;
-
+	
 	public boolean isBalance_factor() {
 		return balance_factor;
 	}
@@ -90,7 +89,7 @@ public class MatchFactors {
 		this.required_runrate_factor = required_runrate_factor;
 	}
 
-	public int getDotFactors(Player batsman, Player bowler, LinkedList<Integer> partnerships, Game game) {
+	public int getDotFactors(Player batsman, Player bowler, List<Partnership> partnerships, Game game) {
 		int effectiveFactor = 0;
 		if (powerplay_factor) {
 			effectiveFactor += game.getPowerplayFactors().getDot_chance();
@@ -116,14 +115,14 @@ public class MatchFactors {
 		if (balance_factor) {
 			effectiveFactor += game.getBalanceFactors().getDot_chance();
 		}
-		effectiveFactor += SettledHandler.getSettledChance(partnerships, batsman.getMatchPlayer().getRuns_scored(),
-				ResultType.DOT, game);
-		effectiveFactor += PressureSituationHandler.getPressureChance(partnerships, ResultType.DOT, game);
+		effectiveFactor += MatchEngine.settledSituationHandler.getSituationalChance(partnerships, batsman.getMatchPlayer().getRuns_scored(),
+				ResultType.DOT);
+		effectiveFactor += MatchEngine.pressureSituationHandler.getSituationalChance(partnerships, 0, ResultType.DOT);
 		effectiveFactor += SkillDataHandler.dotChance(batsman, bowler, game);
 		return effectiveFactor;
 	}
 
-	public int getSingleFactors(Player batsman, Player bowler, LinkedList<Integer> partnerships, Game game) {
+	public int getSingleFactors(Player batsman, Player bowler, List<Partnership> partnerships, Game game) {
 		int effectiveFactor = 0;
 		if (powerplay_factor) {
 			effectiveFactor += game.getPowerplayFactors().getSingle_chance();
@@ -149,14 +148,14 @@ public class MatchFactors {
 		if (balance_factor) {
 			effectiveFactor += game.getBalanceFactors().getSingle_chance();
 		}
-		effectiveFactor += SettledHandler.getSettledChance(partnerships, batsman.getMatchPlayer().getRuns_scored(),
-				ResultType.SINGLE, game);
-		effectiveFactor += PressureSituationHandler.getPressureChance(partnerships, ResultType.SINGLE, game);
+		effectiveFactor += MatchEngine.settledSituationHandler.getSituationalChance(partnerships, batsman.getMatchPlayer().getRuns_scored(),
+				ResultType.SINGLE);
+		effectiveFactor += MatchEngine.pressureSituationHandler.getSituationalChance(partnerships, 0, ResultType.SINGLE);
 		effectiveFactor += SkillDataHandler.singleChance(batsman, bowler, game);
 		return effectiveFactor;
 	}
 
-	public int getDoubleFactors(Player batsman, Player bowler, LinkedList<Integer> partnerships, Game game) {
+	public int getDoubleFactors(Player batsman, Player bowler, List<Partnership> partnerships, Game game) {
 		int effectiveFactor = 0;
 		if (powerplay_factor) {
 			effectiveFactor += game.getPowerplayFactors().getDouble_chance();
@@ -182,14 +181,14 @@ public class MatchFactors {
 		if (balance_factor) {
 			effectiveFactor += game.getBalanceFactors().getDouble_chance();
 		}
-		effectiveFactor += SettledHandler.getSettledChance(partnerships, batsman.getMatchPlayer().getRuns_scored(),
-				ResultType.DOUBLE, game);
-		effectiveFactor += PressureSituationHandler.getPressureChance(partnerships, ResultType.DOUBLE, game);
+		effectiveFactor += MatchEngine.settledSituationHandler.getSituationalChance(partnerships, batsman.getMatchPlayer().getRuns_scored(),
+				ResultType.DOUBLE);
+		effectiveFactor += MatchEngine.pressureSituationHandler.getSituationalChance(partnerships, 0, ResultType.DOUBLE);
 		effectiveFactor += SkillDataHandler.doubleChance(batsman, bowler, game);
 		return effectiveFactor;
 	}
 
-	public int getTripleFactors(Player batsman, Player bowler, LinkedList<Integer> partnerships, Game game) {
+	public int getTripleFactors(Player batsman, Player bowler, List<Partnership> partnerships, Game game) {
 		int effectiveFactor = 0;
 		if (powerplay_factor) {
 			effectiveFactor += game.getPowerplayFactors().getTriple_chance();
@@ -215,14 +214,14 @@ public class MatchFactors {
 		if (balance_factor) {
 			effectiveFactor += game.getBalanceFactors().getTriple_chance();
 		}
-		effectiveFactor += SettledHandler.getSettledChance(partnerships, batsman.getMatchPlayer().getRuns_scored(),
-				ResultType.TRIPLE, game);
-		effectiveFactor += PressureSituationHandler.getPressureChance(partnerships, ResultType.TRIPLE, game);
+		effectiveFactor += MatchEngine.settledSituationHandler.getSituationalChance(partnerships, batsman.getMatchPlayer().getRuns_scored(),
+				ResultType.TRIPLE);
+		effectiveFactor += MatchEngine.pressureSituationHandler.getSituationalChance(partnerships, 0, ResultType.TRIPLE);
 		effectiveFactor += SkillDataHandler.tripleChance(batsman, bowler, game);
 		return effectiveFactor;
 	}
 
-	public int getFourFactors(Player batsman, Player bowler, LinkedList<Integer> partnerships, Game game) {
+	public int getFourFactors(Player batsman, Player bowler, List<Partnership> partnerships, Game game) {
 		int effectiveFactor = 0;
 		if (powerplay_factor) {
 			effectiveFactor += game.getPowerplayFactors().getFour_chance();
@@ -248,14 +247,14 @@ public class MatchFactors {
 		if (balance_factor) {
 			effectiveFactor += game.getBalanceFactors().getFour_chance();
 		}
-		effectiveFactor += SettledHandler.getSettledChance(partnerships, batsman.getMatchPlayer().getRuns_scored(),
-				ResultType.FOUR, game);
-		effectiveFactor += PressureSituationHandler.getPressureChance(partnerships, ResultType.FOUR, game);
+		effectiveFactor += MatchEngine.settledSituationHandler.getSituationalChance(partnerships, batsman.getMatchPlayer().getRuns_scored(),
+				ResultType.FOUR);
+		effectiveFactor += MatchEngine.pressureSituationHandler.getSituationalChance(partnerships, 0, ResultType.FOUR);
 		effectiveFactor += SkillDataHandler.fourChance(batsman, bowler, game);
 		return effectiveFactor;
 	}
 
-	public int getSixFactors(Player batsman, Player bowler, LinkedList<Integer> partnerships, Game game) {
+	public int getSixFactors(Player batsman, Player bowler, List<Partnership> partnerships, Game game) {
 		int effectiveFactor = 0;
 		if (powerplay_factor) {
 			effectiveFactor += game.getPowerplayFactors().getSix_chance();
@@ -281,14 +280,14 @@ public class MatchFactors {
 		if (balance_factor) {
 			effectiveFactor += game.getBalanceFactors().getSix_chance();
 		}
-		effectiveFactor += SettledHandler.getSettledChance(partnerships, batsman.getMatchPlayer().getRuns_scored(),
-				ResultType.SIX, game);
-		effectiveFactor += PressureSituationHandler.getPressureChance(partnerships, ResultType.SIX, game);
+		effectiveFactor += MatchEngine.settledSituationHandler.getSituationalChance(partnerships, batsman.getMatchPlayer().getRuns_scored(),
+				ResultType.SIX);
+		effectiveFactor += MatchEngine.pressureSituationHandler.getSituationalChance(partnerships, 0, ResultType.SIX);
 		effectiveFactor += SkillDataHandler.sixChance(batsman, bowler, game);
 		return effectiveFactor;
 	}
 
-	public int getWicketFactors(Player batsman, Player bowler, LinkedList<Integer> partnerships, Game game) {
+	public int getWicketFactors(Player batsman, Player bowler, List<Partnership> partnerships, Game game) {
 		int effectiveFactor = 0;
 		if (powerplay_factor) {
 			effectiveFactor += game.getPowerplayFactors().getWicket_chance();
@@ -314,9 +313,9 @@ public class MatchFactors {
 		if (balance_factor) {
 			effectiveFactor += game.getBalanceFactors().getWicket_chance();
 		}
-		effectiveFactor += SettledHandler.getSettledChance(partnerships, batsman.getMatchPlayer().getRuns_scored(),
-				ResultType.WICKET, game);
-		effectiveFactor += PressureSituationHandler.getPressureChance(partnerships, ResultType.WICKET, game);
+		effectiveFactor += MatchEngine.settledSituationHandler.getSituationalChance(partnerships, batsman.getMatchPlayer().getRuns_scored(),
+				ResultType.WICKET);
+		effectiveFactor += MatchEngine.pressureSituationHandler.getSituationalChance(partnerships, 0, ResultType.WICKET);
 		effectiveFactor += SkillDataHandler.wicketChance(batsman, bowler, game);
 		return effectiveFactor;
 	}

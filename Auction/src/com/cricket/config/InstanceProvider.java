@@ -12,25 +12,28 @@ import com.cricket.model.InstanceModel;
  *
  */
 public class InstanceProvider {
-	
+
 	static Map<InstanceModel, Object> instances = null;
-	
+
 	/**
 	 * Private constructor
 	 */
 	private InstanceProvider() {
-		
+
 	}
-	
+
 	/**
 	 * Returns new instance of a class if not exist already
+	 * 
 	 * @param <T>
 	 * 
-	 * @param clazz	class whose instance is needed
-	 * @param args class constructor parameters
+	 * @param clazz
+	 *            class whose instance is needed
+	 * @param args
+	 *            class constructor parameters
 	 * @return instance of the class
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked" })
 	public static <T> T getInstance(Class<T> clazz, Object... args) {
 
 		T instance = null;
@@ -47,7 +50,7 @@ public class InstanceProvider {
 		try {
 			Class<?>[] argClasses = new Class<?>[args.length];
 			int index = 0;
-			for(Object arg: args) {
+			for (Object arg : args) {
 				argClasses[index++] = arg.getClass();
 			}
 			instance = clazz.getDeclaredConstructor(argClasses).newInstance(args);

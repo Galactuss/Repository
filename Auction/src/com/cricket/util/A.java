@@ -9,6 +9,7 @@ import java.util.function.Consumer;
  */
 public class A {
 
+	private static final byte BYTE_VALUE = new Integer(0).byteValue();
 	/**
 	 * Performs a certain task for given number of times
 	 * 
@@ -17,9 +18,9 @@ public class A {
 	 * @param func
 	 *            task to be performed
 	 */
-	public static void forEach(int N, Consumer<Integer> func) {
+	public static void forEach(int N, Consumer<Byte> func) {
 		for (int i = 0; i < N; i++) {
-			func.accept(0);
+			func.accept(BYTE_VALUE);
 		}
 	}
 
