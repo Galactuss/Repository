@@ -5,7 +5,7 @@ import java.util.Random;
 
 import com.isl.model.Player;
 import com.isl.model.Team;
-import com.cricket.config.InstanceProvider;
+import com.util.InstanceProvider;
 import com.match.data.CommentryConstants;
 import com.match.data.MatchConstants;
 import com.match.service.MatchFactors;
@@ -13,7 +13,6 @@ import com.match.service.impl.GeneralServiceImpl;
 import com.match.service.impl.ScoreEngine;
 import com.match.util.MatchUtil;
 import com.match.model.Extra;
-import com.match.model.Game;
 import com.isl.model.Partnership;
 
 /**
@@ -24,7 +23,6 @@ import com.isl.model.Partnership;
 public class ScoreEngineImpl implements ScoreEngine {
 	
 	static int max = 12000;
-	static Game game;
 	Random randomGenerator = InstanceProvider.getInstance(Random.class);
 	private GeneralService generalService = (GeneralService) InstanceProvider.getInstance(GeneralServiceImpl.class);
 
@@ -64,9 +62,9 @@ public class ScoreEngineImpl implements ScoreEngine {
 	public boolean dotChance(MatchFactors matchFactors, Player batsman, Player bowler,
 			List<Partnership> partnerships) {
 
-		int external = matchFactors.getDotFactors(batsman, bowler, partnerships, game);
+		int external = matchFactors.getDotFactors(batsman, bowler, partnerships, MatchEngine.game);
 		int dotChance = randomGenerator.nextInt(12000);
-		if (dotChance < (game.getBaseFactors().getDot_chance() + external)) {
+		if (dotChance < (MatchEngine.game.getBaseFactors().getDot_chance() + external)) {
 			return true;
 		}
 		return false;
@@ -79,9 +77,9 @@ public class ScoreEngineImpl implements ScoreEngine {
 	public boolean singleChance(MatchFactors matchFactors, Player batsman, Player bowler,
 			List<Partnership> partnerships) {
 
-		int external = matchFactors.getSingleFactors(batsman, bowler, partnerships, game);
+		int external = matchFactors.getSingleFactors(batsman, bowler, partnerships, MatchEngine.game);
 		int singleChance = randomGenerator.nextInt(12000);
-		if (singleChance < (game.getBaseFactors().getSingle_chance() + external)) {
+		if (singleChance < (MatchEngine.game.getBaseFactors().getSingle_chance() + external)) {
 			return true;
 		}
 		return false;
@@ -94,9 +92,9 @@ public class ScoreEngineImpl implements ScoreEngine {
 	public boolean doubleChance(MatchFactors matchFactors, Player batsman, Player bowler,
 			List<Partnership> partnerships) {
 
-		int external = matchFactors.getDoubleFactors(batsman, bowler, partnerships, game);
+		int external = matchFactors.getDoubleFactors(batsman, bowler, partnerships, MatchEngine.game);
 		int doubleChance = randomGenerator.nextInt(12000);
-		if (doubleChance < (game.getBaseFactors().getDouble_chance() + external)) {
+		if (doubleChance < (MatchEngine.game.getBaseFactors().getDouble_chance() + external)) {
 			return true;
 		}
 		return false;
@@ -109,9 +107,9 @@ public class ScoreEngineImpl implements ScoreEngine {
 	public boolean tripleChance(MatchFactors matchFactors, Player batsman, Player bowler,
 			List<Partnership> partnerships) {
 
-		int external = matchFactors.getTripleFactors(batsman, bowler, partnerships, game);
+		int external = matchFactors.getTripleFactors(batsman, bowler, partnerships, MatchEngine.game);
 		int tripleChance = randomGenerator.nextInt(12000);
-		if (tripleChance < (game.getBaseFactors().getTriple_chance() + external)) {
+		if (tripleChance < (MatchEngine.game.getBaseFactors().getTriple_chance() + external)) {
 			return true;
 		}
 		return false;
@@ -124,9 +122,9 @@ public class ScoreEngineImpl implements ScoreEngine {
 	public boolean fourChance(MatchFactors matchFactors, Player batsman, Player bowler,
 			List<Partnership> partnerships) {
 
-		int external = matchFactors.getFourFactors(batsman, bowler, partnerships, game);
+		int external = matchFactors.getFourFactors(batsman, bowler, partnerships, MatchEngine.game);
 		int fourChance = randomGenerator.nextInt(12000);
-		if (fourChance < (game.getBaseFactors().getFour_chance() + external)) {
+		if (fourChance < (MatchEngine.game.getBaseFactors().getFour_chance() + external)) {
 			return true;
 		}
 		return false;
@@ -139,7 +137,7 @@ public class ScoreEngineImpl implements ScoreEngine {
 	public boolean extraChance(MatchFactors matchFactors) {
 
 		int extraChance = randomGenerator.nextInt(12000);
-		if (extraChance < game.getBaseFactors().getExtra_chance()) {
+		if (extraChance < MatchEngine.game.getBaseFactors().getExtra_chance()) {
 			return true;
 		}
 		return false;
@@ -152,9 +150,9 @@ public class ScoreEngineImpl implements ScoreEngine {
 	public boolean sixChance(MatchFactors matchFactors, Player batsman, Player bowler,
 			List<Partnership> partnerships) {
 
-		int external = matchFactors.getSixFactors(batsman, bowler, partnerships, game);
+		int external = matchFactors.getSixFactors(batsman, bowler, partnerships, MatchEngine.game);
 		int sixChance = randomGenerator.nextInt(12000);
-		if (sixChance < (game.getBaseFactors().getSix_chance() + external)) {
+		if (sixChance < (MatchEngine.game.getBaseFactors().getSix_chance() + external)) {
 			return true;
 		}
 		return false;
@@ -167,10 +165,10 @@ public class ScoreEngineImpl implements ScoreEngine {
 	public boolean wicketChance(MatchFactors matchFactors, Player batsman, Player bowler, int score, int wickets,
 			List<Partnership> partnerships) {
 
-		int external = matchFactors.getWicketFactors(batsman, bowler, partnerships, game);
+		int external = matchFactors.getWicketFactors(batsman, bowler, partnerships, MatchEngine.game);
 		int wicketChance = randomGenerator.nextInt(12000);
 		boolean validate = validateWicket(score, wickets);
-		if ((wicketChance < (game.getBaseFactors().getWicket_chance() + external)) && validate) {
+		if ((wicketChance < (MatchEngine.game.getBaseFactors().getWicket_chance() + external)) && validate) {
 			return true;
 		}
 		return false;

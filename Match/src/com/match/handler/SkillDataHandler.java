@@ -1,7 +1,7 @@
 package com.match.handler;
 
 import com.isl.model.Player;
-import com.cricket.config.InstanceProvider;
+import com.util.InstanceProvider;
 import com.match.model.Game;
 import com.match.service.GeneralService;
 import com.match.service.impl.GeneralServiceImpl;

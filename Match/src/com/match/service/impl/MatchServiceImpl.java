@@ -15,16 +15,16 @@ import com.isl.model.Player;
 import com.isl.model.Team;
 import com.isl.service.PlayerDao;
 import com.isl.service.TeamDao;
-import com.cricket.config.InstanceProvider;
-import com.cricket.util.A;
+import com.util.FunctionUtil;
+import com.util.InstanceProvider;
 import com.match.data.MatchConstants;
 import com.match.model.Game;
 import com.match.model.Match;
 import com.match.service.MatchFactors;
 import com.match.service.MatchService;
 import com.match.util.MatchUtil;
-import com.match.util.RandomUtil;
-import com.match.util.RandomUtil.RandomGenerator;
+import com.util.RandomUtil;
+import com.util.RandomUtil.RandomGenerator;
 
 /**
  * 
@@ -48,7 +48,6 @@ public class MatchServiceImpl implements MatchService {
 	private static int[] savedLineup;
 	private static int counter = 0;
 	private static final long MAX_COUNTER_VALUE = 100000000;
-	private int nextIndex;
 
 	public MatchServiceImpl(GameType gameType) {
 		playerDao = InstanceProvider.getInstance(PlayerDao.class);
@@ -267,8 +266,8 @@ public class MatchServiceImpl implements MatchService {
 	protected void checkOtherAlternatives(int[] players, List<Player> playerList, int index, int[] overs, int count,
 			int checked, Team team, RandomGenerator randomGenerator) {
 
-		A.forEach(4, i -> {
-			nextIndex = (index + randomGenerator.generateUniqueRandom()) % 5;
+		FunctionUtil.times(4, i -> {
+			int nextIndex = (index + randomGenerator.generateUniqueRandom()) % 5;
 			setBowlingLineup(players, playerList, nextIndex, overs, count, checked, team);
 		});
 	}
@@ -349,7 +348,7 @@ public class MatchServiceImpl implements MatchService {
 	public MatchFactors resetMatchFactors(MatchFactors matchFactors) {
 
 		Field[] fields = matchFactors.getClass().getDeclaredFields();
-		A.forEach(fields, field -> {
+		FunctionUtil.forEach(fields, field -> {
 			try {
 				if (!field.isAccessible()) {
 					field.setAccessible(true);

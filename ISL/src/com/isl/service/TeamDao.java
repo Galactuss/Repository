@@ -6,9 +6,9 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
-import com.cricket.config.InstanceProvider;
 import com.isl.data.TableConstants;
 import com.isl.model.GameType;
+import com.util.InstanceProvider;
 
 /**
  * 

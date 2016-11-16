@@ -9,7 +9,7 @@ import com.cricket.data.AuctionConstants;
 import com.isl.model.Player;
 import com.isl.model.Team;
 import com.isl.service.TeamCreator;
-import com.cricket.config.InstanceProvider;
+import com.util.InstanceProvider;
 import com.isl.model.GameType;
 import com.match.service.MatchEngine;
 import com.match.service.impl.MatchServiceImpl;

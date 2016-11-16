@@ -10,7 +10,7 @@ import java.util.Random;
 import com.isl.comparators.BattingSkillsComparator;
 import com.isl.model.Player;
 import com.isl.model.Team;
-import com.cricket.config.InstanceProvider;
+import com.util.InstanceProvider;
 import com.match.data.CommentryConstants;
 import com.match.data.MatchConstants;
 import com.match.handler.PressureSituationHandler;
@@ -20,7 +20,7 @@ import com.match.service.MatchFactors;
 import com.match.service.impl.GeneralServiceImpl;
 import com.match.service.impl.MatchServiceImpl;
 import com.match.service.impl.ScoreEngine;
-import com.match.util.ListUtil;
+import com.util.ListUtil;
 import com.match.util.MatchUtil;
 import com.match.model.Extra;
 import com.match.model.Game;
@@ -67,7 +67,7 @@ public class MatchEngine {
 	private MatchFactors matchFactors;
 	private List<Partnership> partnerships;
 	private Player max;
-	private Game game;
+	public static Game game;
 	private Range current_powerplay;
 	public static SituationHandler settledSituationHandler;
 	public static SituationHandler pressureSituationHandler;
@@ -79,7 +79,6 @@ public class MatchEngine {
 		} else {
 			game = InstanceProvider.getInstance(TtwentyI.class);
 		}
-		ScoreEngineImpl.game = game;
 		generalService = InstanceProvider.getInstance(GeneralServiceImpl.class);
 		matchService = InstanceProvider.getInstance(MatchServiceImpl.class, game.getGameType());
 		rainInterruptionReducedOvers = generalService.checkForRainInteruption();
@@ -586,13 +585,13 @@ public class MatchEngine {
 	private void updateRequired() {
 
 		if (batting_team.getName().equals(match.getBowling_team().getName())) {
-			required = match.getBatting_team().getScore() - score_batting;
+			required = match.getBatting_team().getScore() - score_batting + 1;
 		}
 	}
 
 	private boolean isChaseComplete() {
 
-		if (batting_team.getName().equals(match.getBowling_team().getName()) && required < 0) {
+		if (batting_team.getName().equals(match.getBowling_team().getName()) && required <= 0) {
 			batting_team.setScore(score_batting);
 			batting_team.setWickets(wickets_batting);
 			return true;
