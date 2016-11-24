@@ -9,17 +9,19 @@ import java.util.Random;
 import org.apache.commons.lang3.*;
 
 import com.cricket.data.AuctionConstants;
+import com.cricket.model.Country;
 import com.isl.model.Player;
 import com.isl.model.Team;
+import com.util.InstanceProvider;
 
 public class TeamCreator {
 
-	public Team getTeam(Team team) {
+	public Team getISLTeam(Team team) {
 
 		List<Player> players = team.getPlayers();
 		int[] playersMaxIndex = { 7, 1, 1, 5 };
 		int[] playerCount = { 3, 1, 1, 2 };
-		Random randomGenerator = new Random();
+		Random randomGenerator = InstanceProvider.getInstance(Random.class);
 		int startIndex = 0;
 		int i = 0;
 		while (i < 4) {
@@ -41,7 +43,7 @@ public class TeamCreator {
 	public Team getSquad(String teamName) {
 
 		Team team = new Team();
-		String[] countries = ArrayUtils.addAll(ArrayUtils.addAll(AuctionConstants.COUNTRIES, AuctionConstants.INDIA), ArrayUtils.addAll(AuctionConstants.ASSOCIATE_COUNTRIES, AuctionConstants.DOMESTIC));
+		Country[] countries = (Country[]) ArrayUtils.addAll(ArrayUtils.addAll(AuctionConstants.COUNTRIES, AuctionConstants.INDIA), ArrayUtils.addAll(AuctionConstants.ASSOCIATE_COUNTRIES, AuctionConstants.DOMESTIC));
 		team.setName(teamName);
 		List<Player> players = new ArrayList<Player>();
 		
@@ -56,12 +58,12 @@ public class TeamCreator {
 
 			while ((sCurrentLine = br.readLine()) != null) {
 				Player player = new Player();
-				for (String country : countries) {
-					if (sCurrentLine.contains(country)) {
-						String name = sCurrentLine.substring(0, sCurrentLine.indexOf(country) - 1);
+				for (Country country : countries) {
+					if (sCurrentLine.contains(country.getName())) {
+						String name = sCurrentLine.substring(0, sCurrentLine.indexOf(country.getName()) - 1);
 						String type = sCurrentLine.substring(sCurrentLine.lastIndexOf(" ") + 1);
 						player.setName(name);
-						player.setCountry(country);
+						player.setCountry(country.getName());
 						player.setType(type);
 						players.add(player);
 					}

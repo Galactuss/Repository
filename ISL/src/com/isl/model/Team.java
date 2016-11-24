@@ -6,7 +6,8 @@ public class Team {
 
 	private String name;
 	private List<Player> players;
-	private Player[] bowling_lineup;
+	private List<Player> batting_lineup;
+	private List<Player> bowling_lineup;
 	private int score = 0;
 	private int wickets;
 	private Player wicket_keeper;
@@ -20,11 +21,19 @@ public class Team {
 		this.wicket_keeper = wicket_keeper;
 	}
 
-	public Player[] getBowling_lineup() {
+	public List<Player> getBatting_lineup() {
+		return batting_lineup;
+	}
+
+	public void setBatting_lineup(List<Player> batting_lineup) {
+		this.batting_lineup = batting_lineup;
+	}
+
+	public List<Player> getBowling_lineup() {
 		return bowling_lineup;
 	}
 
-	public void setBowling_lineup(Player[] bowling_lineup) {
+	public void setBowling_lineup(List<Player> bowling_lineup) {
 		this.bowling_lineup = bowling_lineup;
 	}
 

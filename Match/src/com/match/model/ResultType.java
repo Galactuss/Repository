@@ -7,6 +7,7 @@ public enum ResultType {
 	DOUBLE,
 	TRIPLE,
 	FOUR,
+	EXTRA,
 	SIX,
 	WICKET
 }

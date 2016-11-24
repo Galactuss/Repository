@@ -19,7 +19,8 @@ import com.match.handler.SituationHandler;
 import com.match.service.MatchFactors;
 import com.match.service.impl.GeneralServiceImpl;
 import com.match.service.impl.MatchServiceImpl;
-import com.match.service.impl.ScoreEngine;
+import com.match.service.impl.ScoreEngineImpl;
+import com.match.service.ScoreEngine;
 import com.util.ListUtil;
 import com.match.util.MatchUtil;
 import com.match.model.Extra;
@@ -29,7 +30,10 @@ import com.match.model.Match;
 import com.match.model.ODI;
 import com.isl.model.Partnership;
 import com.match.model.Range;
+import com.match.model.ScoreEnginePayLoad;
 import com.match.model.TtwentyI;
+import com.match.model.Wicket;
+import com.match.model.WicketType;
 
 /**
  * 
@@ -141,9 +145,13 @@ public class MatchEngine {
 		} else {
 			matchFactors = matchService.resetMatchFactors(match.getMatchFactors());
 		}
-		Collections.sort(batting_team.getPlayers(), new BattingSkillsComparator());
+		List<Player> batting_lineup = new ArrayList<Player>(batting_team.getPlayers());
+		Collections.sort(batting_lineup, new BattingSkillsComparator());
 		setWicketKeeper();
-		ListUtil.shufflePartialList(batting_team.getPlayers(), 4, 6);
+		if (GameType.T20I.equals(game.getGameType())) {
+			ListUtil.shufflePartialList(batting_lineup, 4, 6);
+		}
+		batting_team.setBatting_lineup(batting_lineup);
 		getOpeners();
 		partnerships = new ArrayList<Partnership>();
 		battingTeam.setPartnerships(partnerships);
@@ -154,7 +162,7 @@ public class MatchEngine {
 		overIndex = 1;
 		setMaximumOvers(matchFactors);
 		matchService.setBowlingLineup(bowlingTeam, game);
-		Player[] bowling_lineup = bowling_team.getBowling_lineup();
+		List<Player> bowling_lineup = bowling_team.getBowling_lineup();
 		displayOpeners(batting_team);
 		generalService.addTimeLag(2);
 		if (isMatchTied) {
@@ -184,8 +192,7 @@ public class MatchEngine {
 				if (battingTeam.getName().equals(match.getBowling_team().getName())) {
 					getValidResult();
 				} else {
-					resultPerBall = scoreEngine.getResultForDelievery(onstrike, bowler, matchFactors, score_batting,
-							wickets_batting, partnerships);
+					resultPerBall = scoreEngine.getResultForDelievery(getScoreEnginePayLoad());
 					if (resultPerBall == 7) {
 						bowler.getMatchPlayer().setHattrickCount(bowler.getMatchPlayer().getHattrickCount() + 1);
 					} else {
@@ -247,7 +254,6 @@ public class MatchEngine {
 					content = generalService.getCommentry(resultPerBall);
 					generalService.writeMatchData(content);
 					displayTypeOfWicket();
-					MatchUtil.update(bowler, "wickets_taken", 1);
 					generalService.addTimeLag(3);
 					updateWicketsBatting();
 					onstrike.getMatchPlayer().setNotOut(false);
@@ -288,6 +294,7 @@ public class MatchEngine {
 			displayEndOfOver(matchFactors);
 			displayBatsmanScore();
 			displayBowlerScore();
+			displayRequired();
 		}
 		batting_team.setScore(score_batting);
 		batting_team.setWickets(wickets_batting);
@@ -356,9 +363,9 @@ public class MatchEngine {
 
 	private void getOpeners() {
 
-		onstrike = batting_team.getPlayers().get(0);
+		onstrike = batting_team.getBatting_lineup().get(0);
 		onstrike.getMatchPlayer().setNotOut(true);
-		non_strike = batting_team.getPlayers().get(1);
+		non_strike = batting_team.getBatting_lineup().get(1);
 		non_strike.getMatchPlayer().setNotOut(true);
 	}
 
@@ -375,6 +382,12 @@ public class MatchEngine {
 			max_overs = game.getMax_overs();
 			ScoreEngineImpl.max = max_overs * 600;
 		}
+	}
+
+	private ScoreEnginePayLoad getScoreEnginePayLoad() {
+		ScoreEnginePayLoad payLoad = new ScoreEnginePayLoad(onstrike, bowler, matchFactors, score_batting,
+				wickets_batting, partnerships);
+		return payLoad;
 	}
 
 	private void checkForMileStone(Player onstrike) {
@@ -403,8 +416,7 @@ public class MatchEngine {
 
 		boolean validResult = false;
 		while (!validResult) {
-			resultPerBall = scoreEngine.getResultForDelievery(onstrike, bowler, matchFactors, score_batting,
-					wickets_batting, partnerships);
+			resultPerBall = scoreEngine.getResultForDelievery(getScoreEnginePayLoad());
 			validResult = matchService.validateResult(required, resultPerBall);
 		}
 	}
@@ -456,7 +468,7 @@ public class MatchEngine {
 
 	private void getNewBatsman(Team batting_team) {
 
-		onstrike = batting_team.getPlayers().get(index);
+		onstrike = batting_team.getBatting_lineup().get(index);
 		onstrike.getMatchPlayer().setNotOut(true);
 		content = onstrike.getName() + " walks into the middle";
 		generalService.writeMatchData(content);
@@ -541,9 +553,9 @@ public class MatchEngine {
 		matchFactors.setDeath_overs_factor(true);
 	}
 
-	private void displayBowler(Player[] bowling_lineup) {
+	private void displayBowler(List<Player> bowling_lineup) {
 
-		bowler = bowling_lineup[overIndex - 1];
+		bowler = bowling_lineup.get(overIndex - 1);
 		content = bowler.getName() + " comes into the action";
 		generalService.writeMatchData(content);
 	}
@@ -569,8 +581,7 @@ public class MatchEngine {
 
 	private void displayExtraResult(MatchFactors matchFactors) {
 
-		extra = scoreEngine.getTypeOfExtra(onstrike, bowler, matchFactors, score_batting, wickets_batting,
-				partnerships);
+		extra = scoreEngine.getTypeOfExtra(getScoreEnginePayLoad());
 		result = extra.getRuns();
 		content = extra.getTypeOfextra() + ", " + result + " runs";
 		generalService.writeMatchData(content);
@@ -578,7 +589,11 @@ public class MatchEngine {
 
 	private void displayTypeOfWicket() {
 
-		content = scoreEngine.getTypeOfWicket(onstrike, bowler, bowling_team);
+		Wicket wicket = scoreEngine.getTypeOfWicket(onstrike, bowler, bowling_team);
+		if (!WicketType.RUNOUT.equals(wicket.getWicketType())) {
+			MatchUtil.update(bowler, "wickets_taken", 1);
+		}
+		content = wicket.getCommentry();
 		generalService.writeMatchData(content);
 	}
 
@@ -586,6 +601,14 @@ public class MatchEngine {
 
 		if (batting_team.getName().equals(match.getBowling_team().getName())) {
 			required = match.getBatting_team().getScore() - score_batting + 1;
+		}
+	}
+
+	private void displayRequired() {
+		if (batting_team.getName().equals(match.getBowling_team().getName()) && (overIndex < max_overs)
+				&& (required < 100 || overIndex >= max_overs * 2 / 3)) {
+			content = required + " runs needed from " + (max_overs - overIndex) + " overs";
+			generalService.writeMatchData(content);
 		}
 	}
 
@@ -664,7 +687,7 @@ public class MatchEngine {
 		contentsb = new StringBuilder();
 		contentsb.append(team.getName()).append(" ").append(team.getScore()).append("/").append(team.getWickets());
 		generalService.writeMatchData(contentsb);
-		team.getPlayers().stream()
+		team.getBatting_lineup().stream()
 		.filter(player -> player.getMatchPlayer().getBalls_faced() != 0 || player.getMatchPlayer().isNotOut())
 		.forEach(player -> {
 			content = player.getMatchPlayer().isNotOut()

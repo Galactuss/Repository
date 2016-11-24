@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import com.cricket.auctionMachine.AuctionMachine;
+import com.cricket.machine.AuctionMachine;
+import com.cricket.machine.SquadCreator;
 import com.cricket.data.AuctionConstants;
 import com.isl.model.Player;
 import com.isl.model.Team;
@@ -36,20 +37,40 @@ public class MatchEngineRunner {
 		boolean runAuction = false;
 		boolean isError = false;
 		Scanner scanner = new Scanner(System.in);
-		while (!runAuction) {
-			System.out.println("Do you want to run auction?(yes/no)");
-			run = scanner.next();
-			if (("yes").equals(run)) {
-				AuctionMachine auctionMachine = InstanceProvider.getInstance(AuctionMachine.class);
-				auctionMachine.runAuction();
+		System.out.println("Do you want to play ISL/Normal match?");
+		boolean isISL = false;
+		String matchType = scanner.next();
+		String[] displayTeams;
+		if (matchType.equals("ISL")) {
+			isISL = true;
+			displayTeams = AuctionConstants.TEAM_NAMES;
+			while (!runAuction) {
+				System.out.println("Do you want to run auction?(yes/no)");
+				run = scanner.next();
+				if (("yes").equals(run)) {
+					AuctionMachine auctionMachine = InstanceProvider.getInstance(AuctionMachine.class);
+					auctionMachine.runAuction();
+				}
+				runAuction = true;
 			}
-			runAuction = true;
+		} else {
+			while (!runAuction) {
+				System.out.println("Do you want to shuffle team selection?(yes/no)");
+				run = scanner.next();
+				if (("yes").equals(run)) {
+					SquadCreator squadCreator = InstanceProvider.getInstance(SquadCreator.class);
+					squadCreator.createSquads();
+				}
+				runAuction = true;
+			}
+			isISL = false;
+			displayTeams = AuctionConstants.COUNTRY_NAMES;
 		}
 		while (!validIndex) {
 			isError = false;
 			System.out.println("Select the teams you would like to see play:");
-			for (int index = 0; index < AuctionConstants.TEAM_NAMES.length; index++) {
-				System.out.println((index + 1) + ". " + AuctionConstants.TEAM_NAMES[index]);
+			for (int index = 0; index < displayTeams.length; index++) {
+				System.out.println((index + 1) + ". " + displayTeams[index]);
 			}
 			if (scanner.hasNextInt()) {
 				teamIndexOne = scanner.nextInt();
@@ -66,7 +87,7 @@ public class MatchEngineRunner {
 			if (teamIndexOne == teamIndexTwo) {
 				System.out.println("Please enter different team index.");
 				validIndex = false;
-			} else if (teamIndexOne > 8 || teamIndexTwo > 8 || teamIndexOne < 0 || teamIndexTwo < 0 || isError) {
+			} else if (teamIndexOne > displayTeams.length || teamIndexTwo > displayTeams.length || teamIndexOne < 0 || teamIndexTwo < 0 || isError) {
 				System.out.println("Please enter valid index.");
 				validIndex = false;
 			} else {
@@ -85,12 +106,19 @@ public class MatchEngineRunner {
 		TeamCreator teamCreator = new TeamCreator();
 		TeamSelector teamSelector = new TeamSelectorImpl();
 		List<Team> teams = new ArrayList<Team>();
-		String[] teamList = { AuctionConstants.TEAM_NAMES[teamIndexOne - 1],
-				AuctionConstants.TEAM_NAMES[teamIndexTwo - 1] };
+		String[] teamList = { displayTeams[teamIndexOne - 1],
+				displayTeams[teamIndexTwo - 1] };
 		for (String teamName : teamList) {
-			Team teamsGenerated = teamCreator.getTeam(teamCreator.getSquad(teamName));
+			Team teamsGenerated = teamCreator.getSquad(teamName);
+			if (isISL) {
+				teamsGenerated = teamCreator.getISLTeam(teamsGenerated);
+			}
 			matchService.setRoles(teamsGenerated);
-			Team team = teamSelector.balanceTeam(teamsGenerated);
+			matchService.setBattingSkills(teamsGenerated);
+			matchService.setBowlingSkills(teamsGenerated);
+			matchService.setBowlingTypes(teamsGenerated);
+			matchService.setWicketKeepingSkills(teamsGenerated);
+			Team team = teamSelector.balanceTeam(teamsGenerated, !isISL);
 			System.out.println("Team: " + team.getName());
 			List<Player> players = new ArrayList<Player>();
 			players = team.getPlayers();
@@ -107,10 +135,6 @@ public class MatchEngineRunner {
 			 * player.setMatchPlayer(matchPlayer); playersNew.add(player); }
 			 */
 			matchService.setMatchPlayers(team);
-			matchService.setBattingSkills(team);
-			matchService.setBowlingSkills(team);
-			matchService.setBowlingTypes(team);
-			matchService.setWicketKeepingSkills(team);
 			/*
 			 * Map<Integer, Player> oversMap = new HashMap<Integer, Player>();
 			 * System.out.println("Set bowling line-up"); for(int overIndex=1;

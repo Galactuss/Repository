@@ -31,15 +31,15 @@ public class TeamDao extends ExcelDaoImpl {
 	 * 
 	 * @return bowling line-up
 	 */
-	public int[] getLineup() {
+	public Integer[] getLineup() {
 
-		int[] lineup;
+		Integer[] lineup;
 		int index = 0;
 		sheet = getSheet();
 		Random randomGenerator = InstanceProvider.getInstance(Random.class);
 		int rowNum = randomGenerator.nextInt(sheet.getPhysicalNumberOfRows());
 		Row row = sheet.getRow(rowNum);
-		lineup = new int[row.getPhysicalNumberOfCells()];
+		lineup = new Integer[row.getPhysicalNumberOfCells()];
 		while (index < lineup.length) {
 			Cell cell = row.getCell(index);
 			lineup[index++] = (int) cell.getNumericCellValue();
@@ -55,13 +55,13 @@ public class TeamDao extends ExcelDaoImpl {
 	 *            bowling line-up
 	 * @return true if successfully added, false otherwise
 	 */
-	public boolean addNewLineup(int[] lineup) {
+	public boolean addNewLineup(Integer[] lineup) {
 
 		sheet = getSheet();
 		return addLineup(lineup, 0);
 	}
 
-	private boolean addLineup(int[] lineup, int rowNum) {
+	private boolean addLineup(Integer[] lineup, int rowNum) {
 
 		if (rowNum == sheet.getPhysicalNumberOfRows()) {
 			addRow(lineup);
@@ -81,7 +81,7 @@ public class TeamDao extends ExcelDaoImpl {
 		return false;
 	}
 
-	private void addRow(int[] array) {
+	private void addRow(Integer[] array) {
 
 		int index = 0;
 		Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());

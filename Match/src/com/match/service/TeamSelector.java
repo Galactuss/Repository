@@ -12,6 +12,6 @@ public interface TeamSelector {
 	 *            object
 	 * @return Balanced team
 	 */
-	Team balanceTeam(Team fullteam);
+	Team balanceTeam(Team fullteam, boolean normal);
 
 }

@@ -19,6 +19,7 @@ public class Game {
 	protected Factors powerplayFactors;
 	protected Factors deathOverFactors;
 	protected double[] skillsFactors;
+	protected Factors superoverFactors;
 	protected List<Range> powerplays;
 	protected int pressureThreshold;
 	protected int requiredRunrateThreshold;
@@ -84,6 +85,10 @@ public class Game {
 
 	public Factors getSettledFactors() {
 		return settledFactors;
+	}
+	
+	public Factors getSuperoverFactors() {
+		return superoverFactors;
 	}
 
 	public int getPressureThreshold() {

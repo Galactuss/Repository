@@ -1,6 +1,7 @@
 package com.match.service.impl;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +46,7 @@ public class MatchServiceImpl implements MatchService {
 	public static Map<Integer, Integer> invalidResults;
 	public static Map<Integer, Integer> invalidExtraResults;
 	public static Map<String, String> pitchFactors;
-	private static int[] savedLineup;
+	private static Integer[] savedLineup;
 	private static int counter = 0;
 	private static final long MAX_COUNTER_VALUE = 100000000;
 
@@ -185,11 +186,12 @@ public class MatchServiceImpl implements MatchService {
 	@Override
 	public void setBowlingLineup(Team team, Game game) {
 
-		Collections.sort(team.getPlayers(), new BowlingSkillsComparator());
-		List<Player> players = team.getPlayers().stream().filter(player -> team.getPlayers().indexOf(player) < 5)
+		List<Player> bowlingLineup = new ArrayList<Player>(team.getPlayers());
+		Collections.sort(bowlingLineup, new BowlingSkillsComparator());
+		List<Player> players = bowlingLineup.stream().limit(5)
 				.collect(Collectors.toList());
 		Collections.sort(players, new BowlingTypeComparator());
-		setBowlingLineup(new int[game.getMax_overs()], players, 0, new int[5], 0, 0, team);
+		setBowlingLineup(new Integer[game.getMax_overs()], players, 0, new int[5], 0, 0, team);
 		stopExecution = false;
 	}
 
@@ -204,18 +206,13 @@ public class MatchServiceImpl implements MatchService {
 	 * @param checked
 	 * @param team
 	 */
-	protected void setBowlingLineup(int[] players, List<Player> playerList, int index, int[] overs, int count,
+	protected void setBowlingLineup(Integer[] players, List<Player> playerList, int index, int[] overs, int count,
 			int checked, Team team) {
 
 		counter++;
 		if (counter > MAX_COUNTER_VALUE) {
 			savedLineup = teamDao.getLineup();
-			Player[] playerArr = new Player[players.length];
-			int arrIndex = 0;
-			for (int playerIndex : savedLineup) {
-				playerArr[arrIndex++] = playerList.get(playerIndex);
-			}
-			team.setBowling_lineup(playerArr);
+			setBowlingLineup(players, team, playerList, savedLineup);
 			stopExecution = true;
 		}
 		if (stopExecution) {
@@ -223,12 +220,7 @@ public class MatchServiceImpl implements MatchService {
 		}
 		if (count == players.length) {
 			teamDao.addNewLineup(players);
-			Player[] playerArr = new Player[players.length];
-			int arrIndex = 0;
-			for (int playerIndex : players) {
-				playerArr[arrIndex++] = playerList.get(playerIndex);
-			}
-			team.setBowling_lineup(playerArr);
+			setBowlingLineup(players, team, playerList, players);
 			stopExecution = true;
 			return;
 		} else if (checked == players.length) {
@@ -263,13 +255,28 @@ public class MatchServiceImpl implements MatchService {
 	 * @param checked
 	 * @param randomGenerator
 	 */
-	protected void checkOtherAlternatives(int[] players, List<Player> playerList, int index, int[] overs, int count,
+	private void checkOtherAlternatives(Integer[] players, List<Player> playerList, int index, int[] overs, int count,
 			int checked, Team team, RandomGenerator randomGenerator) {
 
 		FunctionUtil.times(4, i -> {
 			int nextIndex = (index + randomGenerator.generateUniqueRandom()) % 5;
 			setBowlingLineup(players, playerList, nextIndex, overs, count, checked, team);
 		});
+	}
+
+	/**
+	 * Sets bowling line up
+	 * @param players
+	 * @param team
+	 * @param playerList
+	 * @param source
+	 */
+	private void setBowlingLineup(Integer[] players, Team team, List<Player> playerList, Integer[] source) {
+		List<Player> lineup = new ArrayList<Player>(players.length);
+		FunctionUtil.forEach(source, playerIndex -> {
+			lineup.add(playerList.get(playerIndex));
+		});
+		team.setBowling_lineup(lineup);
 	}
 
 	/*

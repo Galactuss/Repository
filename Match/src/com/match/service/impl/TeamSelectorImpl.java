@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.isl.comparators.BattingSkillsComparator;
+import com.isl.comparators.BowlingSkillsComparator;
 import com.isl.model.Player;
 import com.isl.model.Team;
 import com.match.data.MatchConstants;
@@ -28,11 +30,14 @@ public class TeamSelectorImpl implements TeamSelector {
 	 * @see com.match.service.TeamSelector#balanceTeam(com.isl.model.Team)
 	 */
 	@Override
-	public Team balanceTeam(Team fullteam) {
+	public Team balanceTeam(Team fullteam, boolean normal) {
 
 		Team team = fullteam;
 		List<Player> replacements;
 		int count = 0;
+		if (normal) {
+			Collections.sort(team.getPlayers(), new BattingSkillsComparator());
+		}
 		List<Player> batsmen = team.getPlayers().stream()
 				.limit(11)
 				.filter(player -> (BATSMAN).equals(player.getRole()) || (BISKILLED).equals(player.getRole()))
@@ -65,6 +70,9 @@ public class TeamSelectorImpl implements TeamSelector {
 						.skip(11)
 						.filter(player -> player.getType().equals(batsmen.get(START_INDEX).getType()))
 						.filter(player -> (BOWLER).equals(player.getRole())).collect(Collectors.toList());
+				if (normal) {
+					Collections.sort(replacements, new BowlingSkillsComparator());
+				}
 				if (replacements.size() > 0) {
 					bowlers.add(replacements.get(START_INDEX));
 					team.getPlayers().remove(replacements.get(START_INDEX));

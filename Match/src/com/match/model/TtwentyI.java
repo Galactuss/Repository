@@ -20,12 +20,13 @@ public class TtwentyI extends Game {
 		requiredRunrateFactors = new Factors(-1500, -500, 1000, 300, 300, 0, 200, 200);
 		settledFactors = new Factors(-2400, 700, 600, 100, 800, 0, 200, 0);
 		skillsFactors = new double[]{-1, 0.33, 0.033, 0.25, 0.083, 0.05};
+		superoverFactors = new Factors(-500, -900, -900, 200, 1200, 0, 600, 300);
 		powerplays = new ArrayList<Range>(2);
 		powerplays.add(new Range(1, 6));
 		pressureThreshold = 10;
 		requiredRunrateThreshold = 10;
 		deathOverThreshold = 16;
-		balacedOverThreshold = 14;
+		balacedOverThreshold = 12;
 		balancedRunrateThreshold = 6;
 	}
 }

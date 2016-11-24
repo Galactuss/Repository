@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cricket.data.AuctionConstants;
+import com.cricket.model.Country;
+import com.util.FunctionUtil;
 
 /**
  * 
@@ -18,16 +20,8 @@ public class PlayersService {
 	 * @return
 	 */
 	public List<String> getForeignPlayers() {
-		int count = 0;
-		List<String> players = new ArrayList<String>();
-		String[] countries = AuctionConstants.COUNTRIES;
-		for (String[] array : AuctionConstants.OVERSEAS_PLAYERS) {
-			for (String player : array) {
-				players.add(getPlayerInfo(player, countries[count], AuctionConstants.OVERSEAS));
-			}
-			count++;
-		}
-		return players;
+		Country[] countries = AuctionConstants.COUNTRIES;
+		return getPlayers(countries);
 	}
 
 	/**
@@ -36,16 +30,8 @@ public class PlayersService {
 	 * @return
 	 */
 	public List<String> getAssociatePlayers() {
-		int count = 0;
-		String[] associate_countries = AuctionConstants.ASSOCIATE_COUNTRIES;
-		List<String> players = new ArrayList<String>();
-		for (String[] array : AuctionConstants.ASSOCIATE_PLAYERS) {
-			for (String player : array) {
-				players.add(getPlayerInfo(player, associate_countries[count], AuctionConstants.ASSOCIATES));
-			}
-			count++;
-		}
-		return players;
+		Country[] associate_countries = AuctionConstants.ASSOCIATE_COUNTRIES;
+		return getPlayers(associate_countries);
 	}
 
 	/**
@@ -54,11 +40,7 @@ public class PlayersService {
 	 * @return
 	 */
 	public List<String> getDomesticPlayers() {
-		List<String> players = new ArrayList<String>();
-		for (String player : AuctionConstants.DOMESTIC_PLAYERS) {
-			players.add(getPlayerInfo(player, AuctionConstants.DOMESTIC, AuctionConstants.DOMESTIC));
-		}
-		return players;
+		return getPlayers(AuctionConstants.DOMESTIC);
 	}
 
 	/**
@@ -67,26 +49,33 @@ public class PlayersService {
 	 * @return
 	 */
 	public List<String> getIndianPlayers() {
-		List<String> players = new ArrayList<String>();
-		for (String player : AuctionConstants.INDIAN_CAPPED_PLAYERS) {
-			players.add(getPlayerInfo(player, AuctionConstants.INDIA, AuctionConstants.INDIAN));
-		}
-		return players;
+		return getPlayers(AuctionConstants.INDIA);
 	}
 
 	/**
-	 * Constructs player info to be written
+	 * Returns list of players for country
 	 * 
-	 * @param player
 	 * @param country
-	 * @param type
 	 * @return
 	 */
-	public String getPlayerInfo(String player, String country, String type) {
-
-		StringBuilder builder = new StringBuilder();
-		builder.append(player).append(AuctionConstants.EMPTY_SPACE).append(country).append(AuctionConstants.EMPTY_SPACE)
-				.append(type);
-		return builder.toString();
+	public List<String> getNationalSquadPlayers(Country country) {
+		return getPlayers(country);
 	}
+
+	private List<String> getPlayers(Country[] countries) {
+		List<String> players = new ArrayList<String>();
+		FunctionUtil.forEach(countries, country -> {
+			players.addAll(getPlayers(country));
+		});
+		return players;
+	}
+
+	private List<String> getPlayers(Country country) {
+		List<String> players = new ArrayList<String>();
+		FunctionUtil.forEach(country.getPlayers(), player -> {
+			players.add(player + " " + country.getName() + " " + country.getType());
+		});
+		return players;
+	}
+
 }
