@@ -2,8 +2,6 @@ package com.match.service;
 
 import java.io.BufferedWriter;
 
-import com.match.model.Match;
-
 public interface GeneralService {
 
 	/**
@@ -25,7 +23,7 @@ public interface GeneralService {
 	 * @param match
 	 * @return Bufferedwriter for writing data to file
 	 */
-	BufferedWriter getWriter(Match match);
+	BufferedWriter getWriter();
 
 	/**
 	 * Write data to files

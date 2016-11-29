@@ -10,8 +10,18 @@ public class Team {
 	private List<Player> bowling_lineup;
 	private int score = 0;
 	private int wickets;
+	private String overs;
 	private Player wicket_keeper;
 	private List<Partnership> partnerships;
+	private Player reserved;
+
+	public Player getReserved() {
+		return reserved;
+	}
+
+	public void setReserved(Player reserved) {
+		this.reserved = reserved;
+	}
 
 	public Player getWicket_keeper() {
 		return wicket_keeper;
@@ -67,6 +77,14 @@ public class Team {
 
 	public void setWickets(int wickets) {
 		this.wickets = wickets;
+	}
+
+	public String getOvers() {
+		return overs;
+	}
+
+	public void setOvers(String overs) {
+		this.overs = overs;
 	}
 
 	public List<Partnership> getPartnerships() {

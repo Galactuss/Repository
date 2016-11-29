@@ -109,6 +109,21 @@ public interface MatchService {
 	 */
 	boolean validateResult(int required, int result);
 
+	/**
+	 * Returns whether result is valid
+	 * 
+	 * @param required
+	 * @param result
+	 * @return
+	 */
+	boolean validateExtraResult(int required, int result);
+	
+	/**
+	 * Returns whether pitch factor is to be inserted
+	 * @param bowling_type
+	 * @param pitch_type
+	 * @return
+	 */
 	boolean isPitchFactor(String bowling_type, String pitch_type);
 
 }

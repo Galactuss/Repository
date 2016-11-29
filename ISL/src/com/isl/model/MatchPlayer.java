@@ -13,6 +13,7 @@ public class MatchPlayer {
 	private int catches_taken = 0;
 	private boolean half_century = false;
 	private boolean century = false;
+	private boolean batted = false;
 	private boolean isNotOut = false;
 	private int hattrickCount = 0;
 
@@ -22,6 +23,14 @@ public class MatchPlayer {
 
 	public void setHattrickCount(int hattrickCount) {
 		this.hattrickCount = hattrickCount;
+	}
+
+	public boolean hasBatted() {
+		return batted;
+	}
+
+	public void setBatted(boolean batted) {
+		this.batted = batted;
 	}
 
 	public boolean isNotOut() {

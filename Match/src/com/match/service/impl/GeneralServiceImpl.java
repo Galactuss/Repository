@@ -13,7 +13,6 @@ import java.util.Random;
 import com.util.InstanceProvider;
 import com.match.data.CommentryConstants;
 import com.match.data.MatchConstants;
-import com.match.model.Match;
 import com.match.service.GeneralService;
 import com.match.service.MatchEngine;
 import com.match.web.WebConnector;
@@ -32,7 +31,6 @@ public class GeneralServiceImpl implements GeneralService {
 	private static final String DATA_DIR = MatchConstants.DATA_DIR;
 	private static final String FILE_NAME = MatchConstants.FILE_NAME;
 	private static final String TEXTFILE_EXTENSION = MatchConstants.TEXTFILE_EXTENSION;
-	private Match match;
 
 	/* (non-Javadoc)
 	 * @see com.match.service.GeneralService#addTimeLag(int)
@@ -86,10 +84,9 @@ public class GeneralServiceImpl implements GeneralService {
 	 * @see com.match.service.GeneralService#getWriter(com.match.model.Match)
 	 */
 	@Override
-	public BufferedWriter getWriter(Match match) {
+	public BufferedWriter getWriter() {
 
-		new File(DATA_DIR + match.getBatting_team().getName() + "vs" + match.getBowling_team().getName()).mkdirs();
-		this.match = match;
+		new File(DATA_DIR + MatchEngine.match.getBatting_team().getName() + "vs" + MatchEngine.match.getBowling_team().getName()).mkdirs();
 		File file = new File(generateFileName());
 		try {
 			file.createNewFile();
@@ -199,8 +196,8 @@ public class GeneralServiceImpl implements GeneralService {
 	public String generateFileName() {
 
 		StringBuilder builder = new StringBuilder();
-		builder.append(DATA_DIR).append(match.getBatting_team().getName()).append("vs")
-				.append(match.getBowling_team().getName()).append(FILE_NAME).append(getFormattedDate())
+		builder.append(DATA_DIR).append(MatchEngine.match.getBatting_team().getName()).append("vs")
+				.append(MatchEngine.match.getBowling_team().getName()).append(FILE_NAME).append(getFormattedDate())
 				.append(TEXTFILE_EXTENSION);
 		return builder.toString();
 	}

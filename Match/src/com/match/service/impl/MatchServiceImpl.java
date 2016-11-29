@@ -2,6 +2,7 @@ package com.match.service.impl;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +22,7 @@ import com.util.InstanceProvider;
 import com.match.data.MatchConstants;
 import com.match.model.Game;
 import com.match.model.Match;
+import com.match.service.MatchEngine;
 import com.match.service.MatchFactors;
 import com.match.service.MatchService;
 import com.match.util.MatchUtil;
@@ -43,8 +45,8 @@ public class MatchServiceImpl implements MatchService {
 	private static final String WICKETKEEPING_SKILLS = "wicketkeeping_skills";
 	private static final String BOWLING_TYPES = "bowling_type";
 	private static final String MATCHPLAYER = "matchPlayer";
-	public static Map<Integer, Integer> invalidResults;
-	public static Map<Integer, Integer> invalidExtraResults;
+	public static Map<Integer, List<Integer>> invalidResults;
+	public static Map<Integer, List<Integer>> invalidExtraResults;
 	public static Map<String, String> pitchFactors;
 	private static Integer[] savedLineup;
 	private static int counter = 0;
@@ -60,18 +62,14 @@ public class MatchServiceImpl implements MatchService {
 	 */
 	static {
 
-		Map<Integer, Integer> invalidResults = new HashMap<Integer, Integer>();
-		Map<Integer, Integer> invalidExtraResults = new HashMap<Integer, Integer>();
-		invalidResults.put(1, 2);
-		invalidResults.put(1, 3);
-		invalidResults.put(2, 3);
+		Map<Integer, List<Integer>> invalidResults = new HashMap<Integer, List<Integer>>();
+		Map<Integer, List<Integer>> invalidExtraResults = new HashMap<Integer, List<Integer>>();
+		invalidResults.put(1, new ArrayList<Integer>(Arrays.asList(new Integer[] { 2, 3 })));
+		invalidResults.put(2, new ArrayList<Integer>(Arrays.asList(new Integer[] { 3 })));
 		MatchServiceImpl.invalidResults = invalidResults;
 
-		invalidExtraResults.put(1, 1);
-		invalidExtraResults.put(1, 2);
-		invalidExtraResults.put(1, 3);
-		invalidExtraResults.put(2, 2);
-		invalidExtraResults.put(2, 3);
+		invalidExtraResults.put(1, new ArrayList<Integer>(Arrays.asList(new Integer[] { 1, 2, 3 })));
+		invalidExtraResults.put(2, new ArrayList<Integer>(Arrays.asList(new Integer[] { 2, 3 })));
 		MatchServiceImpl.invalidExtraResults = invalidExtraResults;
 
 	}
@@ -188,8 +186,17 @@ public class MatchServiceImpl implements MatchService {
 
 		List<Player> bowlingLineup = new ArrayList<Player>(team.getPlayers());
 		Collections.sort(bowlingLineup, new BowlingSkillsComparator());
-		List<Player> players = bowlingLineup.stream().limit(5)
-				.collect(Collectors.toList());
+		List<Player> players = bowlingLineup.stream().limit(6).collect(Collectors.toList());
+		if (players.get(4).getBowling_skills() - players.get(5).getBowling_skills() > 5) {
+			team.setReserved(players.remove(5));
+		} else {
+			if (!isPitchFactor(players.get(4).getBowling_type(), MatchEngine.match.getPitch_type())
+					&& isPitchFactor(players.get(5).getBowling_type(), MatchEngine.match.getPitch_type())) {
+				team.setReserved(players.remove(4));
+			} else {
+				team.setReserved(players.remove(5));
+			}
+		}
 		Collections.sort(players, new BowlingTypeComparator());
 		setBowlingLineup(new Integer[game.getMax_overs()], players, 0, new int[5], 0, 0, team);
 		stopExecution = false;
@@ -212,7 +219,7 @@ public class MatchServiceImpl implements MatchService {
 		counter++;
 		if (counter > MAX_COUNTER_VALUE) {
 			savedLineup = teamDao.getLineup();
-			setBowlingLineup(players, team, playerList, savedLineup);
+			setBowlingLineup(team, playerList, savedLineup);
 			stopExecution = true;
 		}
 		if (stopExecution) {
@@ -220,7 +227,7 @@ public class MatchServiceImpl implements MatchService {
 		}
 		if (count == players.length) {
 			teamDao.addNewLineup(players);
-			setBowlingLineup(players, team, playerList, players);
+			setBowlingLineup(team, playerList, players);
 			stopExecution = true;
 			return;
 		} else if (checked == players.length) {
@@ -266,13 +273,14 @@ public class MatchServiceImpl implements MatchService {
 
 	/**
 	 * Sets bowling line up
+	 * 
 	 * @param players
 	 * @param team
 	 * @param playerList
 	 * @param source
 	 */
-	private void setBowlingLineup(Integer[] players, Team team, List<Player> playerList, Integer[] source) {
-		List<Player> lineup = new ArrayList<Player>(players.length);
+	private void setBowlingLineup(Team team, List<Player> playerList, Integer[] source) {
+		List<Player> lineup = new ArrayList<Player>(source.length);
 		FunctionUtil.forEach(source, playerIndex -> {
 			lineup.add(playerList.get(playerIndex));
 		});
@@ -306,10 +314,23 @@ public class MatchServiceImpl implements MatchService {
 	public void updateCareeeRecordsForTeam(Team team) {
 
 		team.getPlayers().forEach(player -> {
-			playerDao.updateCareerRuns(player.getName(), player.getMatchPlayer().getRuns_scored());
-			playerDao.updateCareerWickets(player.getName(), player.getMatchPlayer().getWickets_taken());
-			playerDao.updateCareerMatches(player.getName());
-			playerDao.updateHighestScore(player.getName(), player.getMatchPlayer().getRuns_scored());
+			if (GameType.ODI.equals(MatchEngine.game.getGameType())) {
+				playerDao.updateODICareerRuns(player.getName(), player.getMatchPlayer().getRuns_scored());
+				playerDao.updateODICareerInnings(player.getName(), player.getMatchPlayer().hasBatted());
+				playerDao.updateODICareerNotouts(player.getName(), player.getMatchPlayer().isNotOut());
+				playerDao.updateODICareerAverage(player.getName());
+				playerDao.updateODICareerWickets(player.getName(), player.getMatchPlayer().getWickets_taken());
+				playerDao.updateODICareerMatches(player.getName());
+				playerDao.updateODIHighestScore(player.getName(), player.getMatchPlayer().getRuns_scored());
+			} else {
+				playerDao.updateT20ICareerRuns(player.getName(), player.getMatchPlayer().getRuns_scored());
+				playerDao.updateT20ICareerInnings(player.getName(), player.getMatchPlayer().hasBatted());
+				playerDao.updateT20ICareerNotouts(player.getName(), player.getMatchPlayer().isNotOut());
+				playerDao.updateT20ICareerAverage(player.getName());
+				playerDao.updateT20ICareerWickets(player.getName(), player.getMatchPlayer().getWickets_taken());
+				playerDao.updateT20ICareerMatches(player.getName());
+				playerDao.updateT20IHighestScore(player.getName(), player.getMatchPlayer().getRuns_scored());
+			}
 		});
 	}
 
@@ -380,7 +401,23 @@ public class MatchServiceImpl implements MatchService {
 	public boolean validateResult(int required, int result) {
 
 		if (MatchServiceImpl.invalidResults.containsKey(required)) {
-			if (MatchServiceImpl.invalidResults.get(required) == result) {
+			if (MatchServiceImpl.invalidResults.get(required).indexOf(result) > -1) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.match.service.MatchServicee#validateResult(int, int)
+	 */
+	@Override
+	public boolean validateExtraResult(int required, int result) {
+
+		if (MatchServiceImpl.invalidExtraResults.containsKey(required)) {
+			if (MatchServiceImpl.invalidExtraResults.get(required).indexOf(result) > -1) {
 				return false;
 			}
 		}
