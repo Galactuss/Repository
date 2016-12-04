@@ -10,6 +10,7 @@ import com.cricket.data.AuctionConstants;
 import com.isl.model.Player;
 import com.isl.model.Team;
 import com.isl.service.TeamCreator;
+import com.util.FunctionUtil;
 import com.util.InstanceProvider;
 import com.isl.model.GameType;
 import com.match.service.MatchEngine;
@@ -69,9 +70,9 @@ public class MatchEngineRunner {
 		while (!validIndex) {
 			isError = false;
 			System.out.println("Select the teams you would like to see play:");
-			for (int index = 0; index < displayTeams.length; index++) {
+			FunctionUtil.times(displayTeams.length, index -> {
 				System.out.println((index + 1) + ". " + displayTeams[index]);
-			}
+			});
 			if (scanner.hasNextInt()) {
 				teamIndexOne = scanner.nextInt();
 			} else {
@@ -120,11 +121,10 @@ public class MatchEngineRunner {
 			matchService.setWicketKeepingSkills(teamsGenerated);
 			Team team = teamSelector.balanceTeam(teamsGenerated, !isISL);
 			System.out.println("Team: " + team.getName());
-			List<Player> players = new ArrayList<Player>();
-			players = team.getPlayers();
-			for (int index = 0; index < 11; index++) {
+			List<Player> players = team.getPlayers();
+			FunctionUtil.times(11, index -> {
 				System.out.println(index + 1 + ". " + players.get(index).getName());
-			}
+			});
 			/*
 			 * System.out.println("Set the batting order:"); for(int index=0;
 			 * index<11; index++) {

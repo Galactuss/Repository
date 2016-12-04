@@ -296,11 +296,8 @@ public class MatchServiceImpl implements MatchService {
 	@Override
 	public void updateCareerRecords(Match match) {
 
-		Team team;
-		team = match.getBatting_team();
-		updateCareeeRecordsForTeam(team);
-		team = match.getBowling_team();
-		updateCareeeRecordsForTeam(team);
+		FunctionUtil.forEach(new Team[] { match.getBatting_team(), match.getBowling_team() },
+				team -> updateCareeeRecordsForTeam(team));
 	}
 
 	/*
@@ -343,11 +340,8 @@ public class MatchServiceImpl implements MatchService {
 	@Override
 	public void refreshMatchPlayers(Match match) {
 
-		Team team;
-		team = match.getBatting_team();
-		refreshMatchPlayers(team);
-		team = match.getBowling_team();
-		refreshMatchPlayers(team);
+		FunctionUtil.forEach(new Team[] { match.getBatting_team(), match.getBowling_team() },
+				team -> refreshMatchPlayers(team));
 	}
 
 	/*
@@ -361,8 +355,7 @@ public class MatchServiceImpl implements MatchService {
 
 		List<Player> players = team.getPlayers();
 		players.forEach(player -> {
-			MatchPlayer matchPlayer = new MatchPlayer();
-			player.setMatchPlayer(matchPlayer);
+			player.setMatchPlayer(new MatchPlayer());
 		});
 	}
 
